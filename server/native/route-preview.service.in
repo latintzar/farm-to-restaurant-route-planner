@@ -1,0 +1,32 @@
+[Unit]
+Description=Self-hosted farm-to-restaurant route preview
+After=network.target osrm-preview.service
+Wants=osrm-preview.service
+
+[Service]
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+WorkingDirectory=@PREVIEW_ROOT@
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=tmpfs
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+TasksMax=32
+LimitNOFILE=128
+CPUQuota=100%
+MemoryMax=384M
+BindReadOnlyPaths=@PREVIEW_ROOT@/source @PREVIEW_ROOT@/infra @PREVIEW_ROOT@/evidence
+BindPaths=@PREVIEW_ROOT@/runtime
+ReadWritePaths=@PREVIEW_ROOT@/runtime
+ExecStart=/usr/bin/python3 @PREVIEW_ROOT@/infra/gateway.py --root @PREVIEW_ROOT@/source/app --binary @PREVIEW_ROOT@/source/vroom/bin/vroom --runtime @PREVIEW_ROOT@/runtime --cache @PREVIEW_ROOT@/evidence/road-cache --osrm-upstream http://127.0.0.1:18172 --port 18170
+
+[Install]
+WantedBy=multi-user.target

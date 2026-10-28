@@ -6,7 +6,7 @@ The included Barcelona example has **six fictional farms, five fictional restaur
 
 ![Barcelona road route and calculated costs](docs/assets/route-planner-embedded.png)
 
-[Explore the recorded example](https://latintzar.github.io/farm-to-restaurant-route-planner/demo.html) · [Architecture and decisions](docs/ARCHITECTURE.md) · [Data format](data/README.md)
+[Open the live planner](https://atelierneyra.com/preview/route-planner) · [Explore the recorded example](https://latintzar.github.io/farm-to-restaurant-route-planner/demo.html) · [Architecture and decisions](docs/ARCHITECTURE.md) · [Data format](data/README.md)
 
 ## Try the example
 
@@ -26,7 +26,7 @@ python3 -m http.server 8080 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8080`. Local defaults are OSRM at `http://localhost:5000` and VROOM at `http://localhost:3000`. Set the services you operate or are authorized to use in [config.js](config.js); [examples/config.local-services.js](examples/config.local-services.js) is a complete local configuration. Cross-origin services need CORS support. Hosted pages default to same-origin `/osrm` and `/solve`, supplied by the host's reverse proxy.
 
-OSRM must support `/table/v1/driving` with duration and distance annotations for all 12 catalogue locations, and `/route/v1/driving` with GeoJSON geometry. Follow the [upstream OSRM guide](https://project-osrm.org/docs/v5.24.0/api/) to prepare regional map data. [Routing service setup](server/README.md) includes the optional VROOM container.
+OSRM must support `/table/v1/driving` with duration and distance annotations for all 12 catalogue locations, and `/route/v1/driving` with GeoJSON geometry. Follow the [upstream OSRM guide](https://project-osrm.org/docs/v5.24.0/api/) to prepare regional map data. [Routing service setup](server/README.md) includes the optional VROOM container. The verified [native Linux hosting guide](server/native/README.md) includes bounded services, persistent usage caps and a local OSRM road import.
 
 Choose **scenarios → 3 chefs · 4 items · 250kg**, then **Calculate**. Its scenario ID is `barcelona-multi-stop`: a 250 kg basket delivered to Vela Kitchen, Mica Table and Niu Kitchen. The displayed route uses actual road geometry. An unavailable VROOM service leaves an explicitly browser-checked proposal; a complete validated solver response has its own confirmation status.
 
@@ -73,7 +73,9 @@ With Playwright 1.58.0 and its Chromium installed, `python3 tests/browser_demo.p
 
 **17 offline tests pass**: the 16 existing routing/label cases plus fixture validity, reference integrity, stock/MOQ feasibility and intended capacity boundaries. They exercise the application functions with synthetic matrices and solver responses, making zero real routing requests.
 
-The fictional Barcelona fixture has successful live OSRM table and route responses, retained with exact request URLs and hashes. The real app and recorded example pass desktop/phone walkthroughs; the map has seven readable stop labels. Live VROOM/container compatibility remains unverified. [provenance/release-checks.json](provenance/release-checks.json) records these boundaries.
+The fictional Barcelona fixture has successful live OSRM table and route responses, retained with exact request URLs and hashes. The real app and recorded example pass desktop/phone walkthroughs; the map has seven readable stop labels. The personal hosted preview additionally runs native VROOM1.15.0 and local OSRM5.27.1. A real browser scenario verified HTTP200, zero unassigned shipments and1,854road-geometry vertices; the full cost objective retained the slightly cheaper browser ordering after checking the solver alternative. Container compatibility is a separate path. [provenance/release-checks.json](provenance/release-checks.json) records these boundaries.
+
+The six native-adapter checks run with `python3 server/native/test_gateway.py`; they cover request limits, confined road operations, restart-persistent quotas and preview asset resolution.
 
 ## Code and data
 

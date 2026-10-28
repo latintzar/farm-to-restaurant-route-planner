@@ -1,0 +1,29 @@
+[Unit]
+Description=Self-hosted Barcelona OSRM road service
+After=network.target
+
+[Service]
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+WorkingDirectory=@PREVIEW_ROOT@
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=tmpfs
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+TasksMax=32
+LimitNOFILE=128
+CPUQuota=100%
+MemoryMax=512M
+BindReadOnlyPaths=@PREVIEW_ROOT@/source @PREVIEW_ROOT@/runtime/roads
+ExecStart=@PREVIEW_ROOT@/source/osrm-rootfs/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 --inhibit-cache --library-path @PREVIEW_ROOT@/source/osrm-rootfs/lib/x86_64-linux-gnu:@PREVIEW_ROOT@/source/osrm-rootfs/usr/lib/x86_64-linux-gnu:@PREVIEW_ROOT@/source/osrm-rootfs/usr/local/lib @PREVIEW_ROOT@/source/osrm-rootfs/usr/local/bin/osrm-routed --algorithm mld --ip 127.0.0.1 --port 18172 --threads 1 --max-table-size 24 --max-viaroute-size 24 @PREVIEW_ROOT@/runtime/roads/barcelona.osrm
+
+[Install]
+WantedBy=multi-user.target

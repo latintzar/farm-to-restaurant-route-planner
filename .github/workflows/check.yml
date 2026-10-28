@@ -16,6 +16,7 @@ jobs:
           node-version: '22'
       - run: npm test
       - run: npm run check
+      - run: python3 server/native/test_gateway.py
   browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 10

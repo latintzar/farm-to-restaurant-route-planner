@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-28",
+  "url": "https://atelierneyra.com/preview/route-planner",
+  "app_source_commit": "c72407c6db167c708889ab8602d35210fc349401",
+  "app_sha256": "62ee9a9dc00fbfe213648159f1a2461df9f80de69fe0f72c4bf64f33a99754ee",
+  "scenario": "barcelona-multi-stop",
+  "solver": {
+    "name": "VROOM",
+    "version": "1.15.0",
+    "mode": "custom matrices",
+    "http_status": 200,
+    "shipments": 6,
+    "operations": 12,
+    "unassigned": 0,
+    "peak_kg": 250,
+    "vehicle_capacity_kg": 650
+  },
+  "road_service": {
+    "name": "OSRM",
+    "version": "5.27.1",
+    "dataset": "BBBike Barcelona / OpenStreetMap",
+    "licence": "ODbL1.0",
+    "matrix_http_status": 200,
+    "route_http_status": 200,
+    "geometry_vertices": 1854,
+    "waypoints": 8,
+    "selected_distance_km": 38.4116
+  },
+  "result": "Browser route capacity checked; alternate VROOM route checked. Full goods/fuel/van/driver cost retains the slightly cheaper browser ordering.",
+  "ui": {
+    "desktop_width": 1600,
+    "phone_width": 390,
+    "page_errors": 0,
+    "horizontal_overflow": false
+  },
+  "limits": {
+    "solver_concurrency": 1,
+    "solves_per_hour": 25,
+    "solves_per_day": 100,
+    "solver_soft_seconds": 3,
+    "solver_wall_seconds": 5,
+    "solver_cpu_seconds": 4,
+    "body_bytes": 65536,
+    "locations": 24,
+    "shipments": 24,
+    "vehicle_kg": 650
+  }
+}

@@ -1,0 +1,16 @@
+# Add within your own reviewed site block, preserving existing handlers.
+handle_path /preview/route-planner/* {
+ request_body {
+  max_size 64KB
+ }
+ reverse_proxy 127.0.0.1:18170 {
+  header_up -Cookie
+  header_up -Authorization
+  header_up X-Route-Preview-Prefix /preview/route-planner
+  header_up X-Route-Preview-Client {http.request.client_ip}
+  transport http {
+   dial_timeout 2s
+   response_header_timeout 8s
+  }
+ }
+}
