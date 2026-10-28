@@ -1,0 +1,131 @@
+/* Presentation-only layout for the actual route planner.
+ * Apply after choosing and calculating a real fixture scenario.
+ * No route, stop, label, value, or attribution content is replaced.
+ * Desktop: 1280 × 760 CSS pixels. Phone map: 390 CSS pixels wide.
+ */
+html.capture-view,
+html.capture-view body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.capture-view {
+  --nav-h: 88px;
+  --gutter: 16px;
+}
+
+.capture-view .nav {
+  padding: 0 20px;
+  justify-content: flex-start;
+}
+
+.capture-view .logo {
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+/* Keep the actual app title, map and complete calculated cost card. */
+.capture-view .nav-cta,
+.capture-view .col-left,
+.capture-view .col-right > .card-grow,
+.capture-view .rc-breakdown,
+.capture-view .rc-clear,
+.capture-view .route-stat-wrap,
+.capture-view #map-gmaps {
+  display: none !important;
+}
+
+.capture-view .stage {
+  position: fixed;
+  inset: var(--nav-h) 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 328px;
+  gap: 16px;
+  padding: 16px;
+}
+
+.capture-view .col-map {
+  grid-column: 1;
+  grid-row: 1;
+  height: auto;
+}
+
+.capture-view #map {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+.capture-view .col-right {
+  grid-column: 2;
+  grid-row: 1;
+  overflow: visible;
+  justify-content: center;
+}
+
+.capture-view .card-runcost {
+  padding: 22px 22px 24px;
+  gap: 14px;
+}
+
+.capture-view .section-heading { font-size: 24px; }
+.capture-view .rc-rows { margin-top: 4px; }
+.capture-view .rc-row { padding: 12px 0; font-size: 16px; }
+.capture-view .rc-row strong { font-size: 18px; white-space: nowrap; }
+.capture-view .route-feasibility { font-size: 12px; margin: 4px 0 2px; }
+.capture-view .rc-slot { margin-top: 6px; }
+.capture-view .calc-result { padding: 20px 14px 18px; }
+.capture-view .calc-result .cr-label { font-size: 11px; }
+.capture-view .calc-result .cr-num { font-size: 46px; }
+.capture-view .calc-result .cr-pct { font-size: 13px; margin-top: 7px; }
+
+/* The app's own callout placement remeasures these larger labels. */
+.capture-view .route-name { font-size: 11px; letter-spacing: 0.03em; }
+.capture-view .route-name .rn-num { font-size: 11px; height: 18px; }
+
+/* A settled frame uses the app's normal glow without a timing-dependent pulse. */
+.capture-view .route-glow-pane { animation: none; }
+
+/* Preserve all basemap attribution at the source size or larger. */
+.capture-view .leaflet-control-attribution { font-size: 11px; }
+
+/* Embedded dose for a 700–850px portfolio/README column. */
+.capture-view.capture-embedded { --nav-h: 0px; }
+.capture-embedded .nav { display: none !important; }
+.capture-view.capture-embedded .stage {
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 12px;
+  padding: 12px;
+}
+.capture-embedded .card-runcost { padding: 18px; gap: 10px; }
+.capture-embedded .section-heading { font-size: 22px; }
+.capture-embedded .rc-row { padding: 10px 0; font-size: 14px; }
+.capture-embedded .rc-row strong { font-size: 16px; }
+.capture-embedded .route-feasibility { font-size: 12px; }
+.capture-embedded .calc-result { padding: 18px 10px 16px; }
+.capture-embedded .calc-result .cr-num { font-size: 40px; }
+.capture-embedded .calc-result .cr-pct { font-size: 12px; }
+.capture-embedded .route-name { font-size: 14px; letter-spacing: 0.02em; }
+.capture-embedded .route-name .rn-num { font-size: 14px; height: 22px; }
+
+@media (max-width: 720px) {
+  .capture-view { --nav-h: 72px; }
+  .capture-view .nav { padding: 0 12px; }
+  .capture-view .logo { font-size: 23px; line-height: 1.12; }
+  .capture-view .stage {
+    position: fixed;
+    inset: var(--nav-h) 0 0;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    gap: 0;
+    height: auto;
+  }
+  .capture-view .col-map { grid-column: 1; grid-row: 1; height: auto; }
+  .capture-view .col-right { display: none !important; }
+  .capture-view.capture-embedded { --nav-h: 0px; }
+  .capture-view.capture-embedded .stage { grid-template-columns: minmax(0, 1fr); padding: 0; gap: 0; }
+  .capture-view .route-name { font-size: 12px; letter-spacing: 0.02em; padding: 3px 4px; }
+  .capture-view .route-name .rn-num { font-size: 12px; height: 20px; }
+  .capture-view .leaflet-control-attribution { font-size: 10px; }
+}

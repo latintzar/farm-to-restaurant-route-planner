@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-28",
+  "scenario": "barcelona-multi-stop",
+  "source_app_sha256": "62ee9a9dc00fbfe213648159f1a2461df9f80de69fe0f72c4bf64f33a99754ee",
+  "osrm": [
+    {
+      "url": "https://router.project-osrm.org/table/v1/driving/2.1408,41.3832;2.0712,41.3531;2.0798,41.3386;2.0493,41.3707;2.0589,41.3246;2.0376,41.3974;2.0208,41.3452;2.1632,41.3896;2.1709,41.3837;2.1594,41.4028;2.1908,41.3955;2.1518,41.3786?annotations=duration,distance",
+      "file": "osrm-table.json",
+      "status": 200,
+      "sha256": "9945db06a26b22b67b3d8441d1e22d8bbf4577e29bcf11cd57045f83d6f57a18"
+    },
+    {
+      "url": "https://router.project-osrm.org/route/v1/driving/2.1408,41.3832;2.0493,41.3707;2.0712,41.3531;2.0798,41.3386;2.1709,41.3837;2.1632,41.3896;2.1594,41.4028;2.1408,41.3832?overview=full&geometries=geojson",
+      "file": "osrm-route.json",
+      "status": 200,
+      "sha256": "edacdc0ef109cffa5adc6a7f8fc6193ab68135108ecd85a8044117f62da4ac49"
+    }
+  ],
+  "solver": "Browser heuristic; VROOM deliberately unavailable for this proof. No paid, private or GPU services called.",
+  "result": {
+    "route": [
+      {
+        "id": "depot",
+        "name": "Example depot",
+        "lat": 41.3832,
+        "lng": 2.1408,
+        "kind": "depot"
+      },
+      {
+        "id": "trevol",
+        "name": "Tr\u00e8vol Farm",
+        "lat": 41.3707,
+        "lng": 2.0493,
+        "kind": "farm"
+      },
+      {
+        "id": "brisa",
+        "name": "Brisa Farm",
+        "lat": 41.3531,
+        "lng": 2.0712,
+        "kind": "farm"
+      },
+      {
+        "id": "riuet",
+        "name": "Riuet Farm",
+        "lat": 41.3386,
+        "lng": 2.0798,
+        "kind": "farm"
+      },
+      {
+        "id": "mica",
+        "name": "Mica Table",
+        "lat": 41.3837,
+        "lng": 2.1709,
+        "kind": "restaurant"
+      },
+      {
+        "id": "vela",
+        "name": "Vela Kitchen",
+        "lat": 41.3896,
+        "lng": 2.1632,
+        "kind": "restaurant"
+      },
+      {
+        "id": "niu",
+        "name": "Niu Kitchen",
+        "lat": 41.4028,
+        "lng": 2.1594,
+        "kind": "restaurant"
+      },
+      {
+        "id": "depot",
+        "name": "Example depot",
+        "lat": 41.3832,
+        "lng": 2.1408,
+        "kind": "depot"
+      }
+    ],
+    "cost": {
+      "goods_eur": 265.3,
+      "transport_eur": 30.93378,
+      "transport_fixed_eur": 24,
+      "transport_variable_eur": 6.93378,
+      "driver_eur": 48,
+      "total_eur": 344.23378,
+      "distance_m": 38521,
+      "duration_s": 4167,
+      "mercabarna_equivalent_eur": 440.5,
+      "vroom_solving_ms": 0
+    },
+    "confirmation": {
+      "status": "unavailable",
+      "solving_ms": 0
+    },
+    "result": "GROSS PROFIT\n+\u20ac227\n40% of revenue"
+  },
+  "errors": []
+}

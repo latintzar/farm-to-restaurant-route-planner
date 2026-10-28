@@ -1,0 +1,31 @@
+{
+  "export_date_utc": "2026-10-28",
+  "origin": {
+    "project": "Vitrina routing simulator",
+    "original_repository": "Leo monorepo (private source preserved)",
+    "original_path": "apps/vitrina/company/outward/routing-simulator",
+    "recorded_source_commit": "dbac69422281b857b9425ee01bb1876ddbdb7c2c"
+  },
+  "release_code_source": "Privately reviewed staging source including solver, cost, exact-position map-label and responsive/fit corrections",
+  "pre_export_source_sha256": {
+    "app.js": "fe5483481d73d18c529f30d7a75df8b7f4b543072d7634a9dae261c33054bda6",
+    "index.html": "d0fd22e36e83c5e9347315c8955c049de55c9e2f050ad7977265b98f79922fb3",
+    "style.css": "ef2258d73a1220bb1381bb09cea8ab9cda7dbc8f6472d487b58ac827176381d6",
+    "config.js": "358d36b59646dec41702434993f6e65c4ebe330652e786094d72e49abb9567dc"
+  },
+  "public_adaptations": [
+    "New independently authored business fixture",
+    "Provider-neutral sale/reference price field names and fictional-price copy",
+    "Public report limited to editable basket economics; speculative historical scale projections omitted",
+    "Clean provenance, schema and local-service setup"
+  ],
+  "omitted": [
+    "All prior Git history",
+    "Historical 37-producer catalogue and original sourced coordinates/eligibility",
+    "Historical restaurant/product/scenario/vehicle data",
+    "Source workbooks and research/price exports",
+    "Catalogue/price-seeding scripts dependent on historical research",
+    "Owner deployment tooling, runtime databases and state"
+  ],
+  "code_licence": "MIT, copyright 2026 Peter Neyra"
+}

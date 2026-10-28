@@ -1,0 +1,27 @@
+{
+  "checked_utc": "2026-10-28",
+  "offline_tests": {
+    "command": "npm test",
+    "passed": 17,
+    "failed": 0,
+    "composition": "16 existing solver/cost/state/label regression cases plus1 authored-fixture integrity/feasibility case",
+    "external_requests": 0
+  },
+  "syntax_check": {
+    "command": "npm run check",
+    "status": "passed"
+  },
+  "history": "Fresh export; previous Git history and historical sourced catalogue omitted.",
+  "live_proof": {
+    "public_fixture": "One successful OSRM table GET and route GET on 28 October 2026; URLs/statuses/SHA256 retained in demo/evidence/capture.json. Seven unique stops including start/return, 250kg,38.521km,4167s.",
+    "application": "Real source app and recorded example checked at1600/390; static example enforces0 live routing requests,7stoplabels, result227, no page errors/missing local assets/overflow/nav overlap. Independent negative probe removed route fixture: calculation stopped and emitted explicit error,0live road requests.",
+    "presentation": "Actual map/cost DOM at1280/390, final images/proof under docs/assets; no stop/control collisions, unchanged coordinates, attribution retained.",
+    "vroom": "Explicitly unavailable in recorded example. Live solver/container installation untested."
+  },
+  "bounded_scan": {
+    "private_filename_matches": 0,
+    "obvious_credential_pattern_matches": 0,
+    "scope": "Private-key blocks, selected token formats and literal credential assignments; matched values suppressed; not comprehensive clearance",
+    "gitleaks": "8.30.1 redacted full export scan:0 findings before added presentation/demo assets; final scan recorded at publication."
+  }
+}

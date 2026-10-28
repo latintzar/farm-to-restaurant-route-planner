@@ -1,0 +1,45 @@
+{
+  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "restaurants": [
+    {
+      "id": "vela",
+      "name": "Vela Kitchen",
+      "neighbourhood": "Eixample",
+      "lat": 41.3896,
+      "lng": 2.1632,
+      "synthetic": true
+    },
+    {
+      "id": "mica",
+      "name": "Mica Table",
+      "neighbourhood": "Ciutat Vella",
+      "lat": 41.3837,
+      "lng": 2.1709,
+      "synthetic": true
+    },
+    {
+      "id": "niu",
+      "name": "Niu Kitchen",
+      "neighbourhood": "Gràcia",
+      "lat": 41.4028,
+      "lng": 2.1594,
+      "synthetic": true
+    },
+    {
+      "id": "bruna",
+      "name": "Bruna Table",
+      "neighbourhood": "Sant Martí",
+      "lat": 41.3955,
+      "lng": 2.1908,
+      "synthetic": true
+    },
+    {
+      "id": "riu",
+      "name": "Riu Kitchen",
+      "neighbourhood": "Poble-sec",
+      "lat": 41.3786,
+      "lng": 2.1518,
+      "synthetic": true
+    }
+  ]
+}

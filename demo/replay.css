@@ -1,0 +1,9 @@
+.recorded-example .nav {flex-wrap:wrap;height:auto;min-height:64px;padding-block:14px;gap:8px 20px}
+.recorded-notice {flex:0 0 100%;margin:0;font:12px/1.5 Archivo,system-ui,sans-serif;color:#535650}
+.recorded-notice a {color:inherit;text-underline-offset:3px}
+.recorded-example .stage {height:auto}
+.recorded-example [hidden] {display:none!important}
+.recorded-example #calculate:disabled {opacity:1;cursor:default}
+.recorded-example .pp-btn,.recorded-example .ol-rm {display:none!important}
+.recorded-example .rep-row {cursor:default}
+@media(max-width:880px){.recorded-example .stage{height:auto}.recorded-example .nav{padding-inline:14px}.recorded-notice{font-size:11px}}

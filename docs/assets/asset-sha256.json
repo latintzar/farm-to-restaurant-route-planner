@@ -1,0 +1,11 @@
+{
+  "README.md": "63b4610276cb6a7569f0d8b998beea57d0eb5ad1b89481705e7d41c928592a26",
+  "capture-proof.json": "378f9028e3471fc3b97139ddf713ed6279089bff2bb7120763f3410e80e23bca",
+  "capture.css": "2932d353277ca3309c6ad1541aefdd9179a38f05127d7282830de9b52c0cf4ba",
+  "evidence/capture.json": "21aa70244f7a65731f314c7124e423fc1d920c64ad3f2c53d41868c72f7c4a62",
+  "evidence/osrm-route.json": "edacdc0ef109cffa5adc6a7f8fc6193ab68135108ecd85a8044117f62da4ac49",
+  "evidence/osrm-table.json": "9945db06a26b22b67b3d8441d1e22d8bbf4577e29bcf11cd57045f83d6f57a18",
+  "render.py": "3f3fef5e1ad86677787e4f291223e3197e39dfb0a3ae45dfaa8ddee49874ace1",
+  "route-planner-embedded.png": "f53728a8cb82c4a15de9e4b7f099ef1cf896f49f77df6ca654c1fb4fe1ebfa9f",
+  "route-planner-phone-map.png": "bd00eb40f9067d32a3860c95538cd2c2f829e032f283f775ce117cae537830ba"
+}

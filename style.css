@@ -1,0 +1,1794 @@
+/* =====================================================================
+   Vitrina · Routing Simulator
+   Tokens / typography / patterns mirror apps/vitrina/product/public/bg/live/index.html.
+   The grand goal: this should feel like the same product as vitrina.bg, just
+   the internal "let's see how the model decides" tool. Same paper, same
+   2px ink borders, same chunky rust offset shadows, same Archivo + Mono.
+   ===================================================================== */
+
+:root{
+  /* Paper / ink scale (mirror) */
+  --paper:#ffffff;
+  --paper-warm:#f5f7f2;
+  --paper-card:#ffffff;
+  --paper-deep:#dfe3da;
+  --ink:#0e1a14;
+  --ink-soft:#1f2a23;
+  --ink-mid:rgba(14,26,20,0.62);
+  --ink-faint:rgba(14,26,20,0.34);
+  --rule:rgba(28,28,26,0.16);
+  --rule-strong:rgba(28,28,26,0.4);
+
+  /* Brand colour family (mirror) */
+  --moss:#1a4d2e;
+  --moss-soft:#2d6f43;
+  --rust:#ee6c2c;
+  --rust-deep:#c95216;
+  --gold:#f3b94d;
+  --gold-deep:#cc9224;
+  --sky:#5a8aa8;
+  --forest:#143521;
+
+  /* Layout knobs specific to the simulator */
+  --ticker-h:0px;  /* eyebrow removed 2026-05-12; kept as 0 so calc()s downstream still work */
+  --nav-h:60px;
+  --col-left-w:380px;
+  --col-right-w:380px;
+  --gutter:14px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  background:var(--paper-warm);
+  color:var(--ink);
+  font-family:'Archivo',sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden; /* the stage is full-viewport */
+}
+::selection{background:var(--gold);color:var(--ink)}
+button{font-family:inherit}
+
+/* =====================================================================
+   NAV — warm cream bar, logo only.
+   The black eyebrow ticker (VROOM/OSRM status dots) and the
+   back-to-pitch CTA were both removed 2026-05-12 to quiet the chrome.
+   --ticker-h is pinned to 0 so the .stage top calc() still works.
+   ===================================================================== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:190;
+  height:var(--nav-h);
+  background:#f1ece0;border-bottom:1px solid var(--rule);
+  padding:0 22px;
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+}
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:var(--paper);
+  border:1.5px solid var(--ink);
+  padding:7px 14px 7px 11px;border-radius:0;cursor:pointer;
+  font-family:'Archivo',sans-serif;font-weight:700;font-size:12.5px;
+  letter-spacing:0.02em;line-height:1;
+  transition:transform .12s, box-shadow .12s;
+}
+.nav-cta:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--rust)}
+.nav-cta-icon{font-size:14px;line-height:1;color:var(--rust)}
+@media(max-width:720px){.nav-cta-text{display:none} .nav-cta{padding:7px 10px}}
+.logo{
+  display:inline-flex;align-items:baseline;gap:10px;
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:26px;
+  letter-spacing:-0.04em;color:var(--ink);text-transform:lowercase;
+  text-decoration:none;line-height:1;
+}
+.logo .dot{color:var(--rust)}
+.logo-tag{
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11.5px;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mid);
+  line-height:1;position:relative;top:-1px;
+}
+@media(max-width:720px){.logo-tag{display:none}}
+
+/* =====================================================================
+   STAGE — three-column layout below the nav
+   ===================================================================== */
+.stage{
+  position:fixed;top:calc(var(--ticker-h) + var(--nav-h));left:0;right:0;bottom:0;
+  display:grid;
+  grid-template-columns:var(--col-left-w) 1fr var(--col-right-w);
+  gap:var(--gutter);
+  padding:var(--gutter);
+  background:var(--paper-warm);
+}
+.col{
+  display:flex;flex-direction:column;
+  gap:var(--gutter);
+  min-height:0;  /* let inner overflow scroll */
+  /* Each sidebar column scrolls as one when its cards exceed the viewport.
+     Centre column (the map) opts out — see .col-map below. */
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--rule) transparent;
+}
+.col::-webkit-scrollbar{width:8px}
+.col::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+.col-map{position:relative;min-width:0;overflow:hidden}
+
+/* col-right-flex: opt OUT of column-level scroll. The order-basket card
+   grows AND shrinks to fit the available height, scrolling INTERNALLY
+   via .order-lines-scroll. The run-cost card sticks to the bottom at
+   its natural height. The !important is structurally necessary because
+   the generic .card{flex-shrink:0} rule sits later in the file. */
+.col-right-flex{overflow:hidden}
+.col-right-flex .card-grow{flex:1 1 0 !important;min-height:0 !important}
+.col-right-flex .card-runcost{flex:0 0 auto !important}
+.card-flex{display:flex;flex-direction:column;gap:10px}
+
+/* Scroll containers (left farm cards + right order lines) */
+.farm-cards-scroll,
+.order-lines-scroll{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--rule) transparent;
+  margin:0 -4px;padding:0 4px;
+}
+.farm-cards-scroll::-webkit-scrollbar,
+.order-lines-scroll::-webkit-scrollbar{width:6px}
+.farm-cards-scroll::-webkit-scrollbar-thumb,
+.order-lines-scroll::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
+
+/* =====================================================================
+   CARD — the 2px ink box pattern from vitrina.bg .walk-card
+   ===================================================================== */
+.card{
+  background:var(--paper-card);
+  border:2px solid var(--ink);
+  padding:16px 16px 14px;
+  display:flex;flex-direction:column;
+  gap:10px;
+  min-height:0;
+  position:relative;
+  /* CRITICAL: in a flex column with overflow-y:auto, children would
+     otherwise shrink to fit and visually overlap their content. Pin
+     them to natural size so the column scrolls past them instead. */
+  flex-shrink:0;
+}
+/* `card-grow` used to fight the column for vertical space. Now that the
+   whole column scrolls (.col overflow-y:auto), each card just renders at
+   natural height and the column handles overflow. */
+.card-grow{min-height:0}
+
+.kicker{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;
+  letter-spacing:0.18em;text-transform:uppercase;color:var(--rust);
+  line-height:1;
+}
+.kicker.tight{font-size:10px;letter-spacing:0.14em;color:var(--ink-mid);margin-bottom:6px}
+.kicker-sub{color:var(--ink-faint);font-weight:600}
+
+.card-title{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;
+  line-height:1.05;letter-spacing:-0.025em;text-transform:uppercase;
+  color:var(--ink);
+}
+.card-title em{
+  font-family:inherit;font-style:normal;color:var(--rust);
+  background:rgba(238,108,44,0.16);padding:0 0.06em;
+}
+.card-sub{
+  font-family:'Archivo',sans-serif;font-style:italic;font-size:13px;
+  line-height:1.45;color:var(--ink-soft);
+}
+.card-sub strong{font-style:normal;font-weight:700;color:var(--ink)}
+
+/* =====================================================================
+   SCENARIOS — list inside the scenarios modal (left panel no longer
+   carries scenarios; they live in a dedicated picker modal opened from
+   the order builder).
+   ===================================================================== */
+.scenario-list{
+  display:flex;flex-direction:column;gap:10px;
+  margin-top:10px;
+}
+.scenario{
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  padding:14px 16px;
+  cursor:pointer;
+  display:flex;flex-direction:column;gap:6px;
+  transition:transform 0.12s, box-shadow 0.12s, background 0.12s;
+  text-align:left;
+}
+.scenario:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:5px 5px 0 var(--rust);
+}
+.scenario.on{
+  background:var(--ink);color:var(--paper);
+  border-color:var(--ink);
+  box-shadow:5px 5px 0 var(--rust);
+  transform:translate(-2px,-2px);
+}
+.scenario .s-title{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;
+  letter-spacing:-0.01em;line-height:1.25;color:var(--ink);
+}
+.scenario.on .s-title{color:var(--paper)}
+.scenario .s-tag{
+  font-family:'Archivo',sans-serif;font-style:italic;font-size:12.5px;
+  line-height:1.4;color:var(--ink-mid);
+}
+.scenario.on .s-tag{color:rgba(255,255,255,0.78)}
+.scenario .s-expected{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:0.04em;color:var(--ink-faint);line-height:1.45;
+  border-top:1px dashed var(--rule);padding-top:6px;margin-top:2px;
+}
+.scenario.on .s-expected{color:rgba(255,255,255,0.55);border-top-color:rgba(255,255,255,0.18)}
+
+/* The CTA inside the order builder that opens the scenarios modal */
+/* (.scenarios-cta and .basket-actions removed — the two big CTAs were
+   replaced by the compact `.bh-btn` pair in the basket-card head; see
+   `.basket-head-actions` above.) */
+
+/* =====================================================================
+   FARM CARDS — scrollable list of supply
+   ===================================================================== */
+.toolbar{
+  display:flex;gap:8px;align-items:stretch;
+  margin-top:2px;
+}
+.toolbar input{flex:1}
+
+.farm-cards{
+  display:flex;flex-direction:column;gap:8px;
+  margin:4px 0 0;
+}
+
+/* =====================================================================
+   SUPPLY VIEW TOGGLE — by farm ↔ by product
+   ===================================================================== */
+.supply-view-toggle{
+  display:flex;gap:0;margin:6px 0 0;
+  border:1.5px solid var(--ink);background:var(--paper);
+}
+.svt-btn{
+  flex:1;padding:6px 8px;background:transparent;border:0;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mid);
+  border-right:1px solid var(--rule);
+}
+.svt-btn:last-child{border-right:0}
+.svt-btn.on{background:var(--ink);color:var(--paper)}
+.svt-btn:hover:not(.on){background:var(--paper-warm);color:var(--ink)}
+
+/* =====================================================================
+   PRODUCT-VIEW CARD — one card per product, farms listed inside
+   (when supply view is "by product").
+   ===================================================================== */
+.product-card{
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  padding:10px 12px 9px;
+  position:relative;
+}
+.product-card .pc-head{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:7px;border-bottom:1px solid var(--rule);
+  margin-bottom:6px;
+}
+.product-card .pc-icon{font-size:18px;line-height:1}
+.product-card .pc-name{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:14.5px;color:var(--ink);
+}
+.product-card .pc-name em{
+  font-style:italic;font-weight:500;color:var(--ink-mid);font-size:12.5px;
+  margin-left:4px;
+}
+.product-card .pc-total{
+  margin-left:auto;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;
+  color:var(--rust);font-variant-numeric:tabular-nums;
+}
+.product-card .pc-bench{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);
+  margin-bottom:5px;
+}
+.product-card .pc-bench strong{color:var(--ink-mid);font-weight:700}
+.product-card .pc-farm-row{
+  display:grid;grid-template-columns:1fr auto auto auto;
+  gap:8px;align-items:baseline;
+  padding:5px 0;border-bottom:1px dashed var(--rule);
+  font-size:12px;
+}
+.product-card .pc-farm-row:last-child{border-bottom:0}
+.product-card .pc-farm-name{
+  font-family:'Archivo',sans-serif;font-weight:700;color:var(--ink);
+}
+.product-card .pc-farm-region{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);
+}
+.product-card .pc-farm-stock,
+.product-card .pc-farm-price{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.product-card .pc-farm-price{color:var(--rust)}
+.product-card .pc-empty{
+  padding:10px 0;text-align:center;color:var(--ink-faint);font-style:italic;font-size:12px;
+}
+
+.farm-card{
+  /* Faint farm-color body wash — reads as "this farm exists and is
+     real" even when it didn't make it into the chosen route. Without
+     this, non-chosen cards became anonymous white rectangles after a
+     decision landed, and the eye couldn't answer "do we have enough
+     farms?" at a glance. The 8% mix is subtle enough that the chosen
+     state still pops, but loud enough that the panel reads as full. */
+  background:color-mix(in srgb, var(--farm-color, var(--paper)) 8%, var(--paper));
+  border:1.5px solid var(--ink);
+  padding:10px 12px 9px;
+  position:relative;
+  transition:transform 0.12s, box-shadow 0.12s, background 0.18s;
+}
+.farm-card.dim{opacity:0.42}
+.farm-card.chosen{
+  background:color-mix(in srgb, var(--farm-color, var(--paper)) 14%, var(--paper));
+  box-shadow:4px 4px 0 var(--moss);
+  transform:translate(-2px,-2px);
+  border-color:var(--moss);
+}
+.farm-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:var(--farm-color, var(--rust));
+}
+.farm-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.farm-name{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:14.5px;
+  letter-spacing:-0.005em;color:var(--ink);line-height:1.15;
+}
+.farm-loc{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mid);
+}
+.farm-stock{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.stock-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 8px;
+  border:1px solid var(--ink);
+  background:var(--paper-card);
+  font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;
+  color:var(--ink);line-height:1.3;
+}
+.stock-pill.match{background:var(--gold);border-color:var(--ink)}
+.stock-pill.taken{background:var(--moss);border-color:var(--moss);color:var(--paper)}
+.stock-pill .sp-qty{font-variant-numeric:tabular-nums;font-weight:800}
+.stock-pill .sp-price{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  color:var(--ink-mid);letter-spacing:0.04em;
+}
+.stock-pill.taken .sp-price{color:rgba(255,255,255,0.78)}
+/* catalog-only pills (SKU eligibility, no live stock confirmed yet) */
+.stock-pill.eligibility{opacity:0.62;border-style:dashed}
+.stock-pill.eligibility .sp-price{border-bottom:1px dashed var(--ink-mid)}
+
+/* source-link icons in supply sidebar cards and product-view rows */
+.farm-src,.pc-farm-src{
+  font-size:11px;opacity:0.45;text-decoration:none;
+  line-height:1;flex-shrink:0;
+}
+.farm-src:hover,.pc-farm-src:hover{opacity:1}
+
+/* source link in map popup (larger tap target, inline with button) */
+.leaflet-popup-content .pp-src{
+  display:inline-block;margin-top:6px;
+  font-size:11px;color:var(--ink-mid);text-decoration:none;
+  font-family:'JetBrains Mono',monospace;
+}
+.leaflet-popup-content .pp-src:hover{color:var(--ink)}
+
+/* em-dash stock placeholder in by-product view for catalog-only farms */
+.pc-farm-stock.dim{opacity:0.35;font-style:italic}
+
+/* =====================================================================
+   MAP
+   ===================================================================== */
+#map{
+  position:absolute;inset:0;
+  border:2px solid var(--ink);
+  background:var(--paper);
+}
+.leaflet-container{
+  background:#e8eadf;
+  font-family:'Archivo',sans-serif;
+}
+.leaflet-popup-content-wrapper{
+  background:var(--paper-card);color:var(--ink);
+  border:1.5px solid var(--ink);
+  border-radius:0;
+  box-shadow:4px 4px 0 var(--ink);
+  font-family:'Archivo',sans-serif;
+}
+.leaflet-popup-content{margin:10px 12px;font-size:12.5px;line-height:1.4}
+.leaflet-popup-content strong{font-weight:800;color:var(--ink)}
+.leaflet-popup-content .pp-kicker{
+  display:block;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;
+  letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);
+  margin-bottom:4px;
+}
+.leaflet-popup-tip{display:none}
+.leaflet-popup-close-button{display:none}
+
+/* Action buttons inside Leaflet popups (e.g. "Add order" on a chef pin,
+   "Add stock" on a farm pin). Sticks to the brand button look. */
+.leaflet-popup-content .pp-actions{
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--rule);
+}
+.leaflet-popup-content .pp-btn{
+  display:inline-block;width:100%;
+  background:var(--ink);color:var(--paper);border:0;
+  padding:7px 10px;cursor:pointer;
+  font-family:'Archivo',sans-serif;font-weight:700;font-size:12px;
+  letter-spacing:0.04em;text-transform:none;text-align:center;
+  box-shadow:2px 2px 0 var(--rust);
+  transition:transform 0.08s, box-shadow 0.08s;
+}
+.leaflet-popup-content .pp-btn:hover{
+  transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--rust);
+}
+.leaflet-popup-content .pp-btn:active{
+  transform:translate(0,0);box-shadow:1px 1px 0 var(--rust);
+}
+
+/* =====================================================================
+   MAP MARKERS — state machine: idle / candidate / chosen.
+   All pins are ALWAYS in the DOM; only the visual weight changes.
+   Idle pins are passive outlines so the chosen + candidate ones pop.
+   This is the core of the "intelligent species, only relevant things
+   light up" effect Peter wanted on the map.
+
+   Transitions are slow (~0.4s) so adding/removing orders feels like
+   the map is actively reacting, not just snapping.
+   ===================================================================== */
+.pin-wrap{background:transparent;border:0}
+.pin{
+  width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  font-family:'Archivo',sans-serif;font-weight:900;
+  font-size:0;line-height:1;
+  border:2px solid var(--ink);
+  cursor:pointer;
+  transition:width 0.4s ease, height 0.4s ease,
+             background 0.4s ease, border-color 0.4s ease,
+             box-shadow 0.4s ease, opacity 0.4s ease,
+             transform 0.12s ease;
+}
+.pin:hover{transform:scale(1.25);box-shadow:0 2px 6px rgba(0,0,0,0.5);z-index:5}
+
+/* FARM PINS — round green circles. Sizes deliberately small so a
+   solved 13-stop route doesn't look like 13 fried eggs on the map. */
+.pin-farm{background:var(--moss-soft);box-shadow:0 1px 2px rgba(0,0,0,0.32)}
+/* Idle farms keep a faint hint of their farm-color so the map still
+   reads as "many real farms with identity" before any solve runs.
+   Without the tint, every idle pin looked like an anonymous grey dot
+   and the supply panel felt thin. Now: small dot, dimmed border, but
+   visibly the farm's color. */
+.pin-farm.pin-idle{
+  background:color-mix(in srgb, var(--farm-color, #888) 38%, transparent);
+  border-color:color-mix(in srgb, var(--farm-color, #888) 70%, var(--ink-faint));
+  border-width:1.5px;
+  width:8px;height:8px;
+  opacity:0.78;
+  box-shadow:none;
+}
+.pin-farm.pin-candidate{
+  background:color-mix(in srgb, var(--farm-color, var(--paper)) 30%, var(--paper));
+  border-color:var(--rust);
+  border-width:2px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.28);
+  width:11px;height:11px;
+}
+.pin-farm.pin-chosen{
+  background:var(--moss);
+  border-color:var(--gold);
+  border-width:1.5px;
+  box-shadow:0 0 0 1.5px rgba(243,185,77,0.55), 0 1px 4px rgba(0,0,0,0.4);
+  width:13px;height:13px;
+}
+
+/* RESTAURANT PINS — rust diamonds (rotated squares). Idle chefs
+   collapse to a small outlined dot so they don't crowd a basket-rich map. */
+.pin-restaurant{
+  background:var(--rust);
+  border-radius:0;
+  transform:rotate(45deg);
+  width:10px;height:10px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.32);
+}
+.pin-restaurant:hover{transform:rotate(45deg) scale(1.3)}
+.pin-restaurant.pin-idle{
+  background:transparent;
+  border-color:var(--ink-faint);
+  border-width:1.5px;
+  width:7px;height:7px;
+  opacity:0.55;
+  box-shadow:none;
+}
+.pin-restaurant.pin-candidate{
+  background:var(--rust);
+  border-color:var(--ink);
+  width:11px;height:11px;
+}
+.pin-restaurant.pin-chosen{
+  background:var(--rust);
+  border-color:var(--gold);
+  border-width:1.5px;
+  box-shadow:0 0 0 1.5px rgba(243,185,77,0.45), 0 1px 4px rgba(0,0,0,0.42);
+  width:12px;height:12px;
+}
+
+/* DEPOT PIN — always full-bright gold, inline truck glyph. The
+   driver hub never goes passive: there's exactly one of it and it's
+   always relevant. Sized so the truck SVG reads at a glance without
+   dwarfing the round farm/triangle restaurant pins. */
+.pin-depot{
+  background:var(--gold);color:var(--ink);
+  border-color:var(--ink);
+  border-radius:3px;
+  width:18px;height:18px;
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,0.34);
+}
+.pin-depot svg{display:block}
+.pin-depot.pin-chosen{box-shadow:0 0 0 1.5px rgba(14,26,20,0.45), 0 1px 4px rgba(0,0,0,0.34)}
+
+/* =====================================================================
+   CANDIDATE PIN — STATIC inner ring (no breathing).
+   We removed the 2.4s box-shadow pulse: with 4–8 flash polylines
+   simultaneously animating during a solve, *another* repeating
+   box-shadow keyframe on every candidate pin added too much motion
+   and made the screen feel jaggy. The inner rust ring is enough on
+   its own to say "in the consideration set" — the flashes between
+   pins carry the "thinking" motion now. Auto-supersedes when the pin
+   upgrades to .pin-chosen.
+   ===================================================================== */
+.pin-farm.pin-candidate{
+  box-shadow:0 0 0 2px rgba(238,108,44,0.32), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* When the map is zoomed out past the readable-density threshold
+   (toggled from app.js via MAP.on('zoomend') → #map.zoom-low when
+   zoom<12), hide the chosen-route name pills AND the route-stat KM·MIN
+   midpoint label so the map stays pin-only. At regional zoom the side
+   panel already shows the same numbers; on-map labels just collide.
+   Pins stay visible at every zoom — they're the actual signal. */
+#map.zoom-low .route-stat-wrap{display:none}
+
+/* Floating name pill next to chosen-route stops only. Anchored away from
+   the pin glyph so the route number stays readable. */
+.route-name-wrap{background:transparent;border:0;pointer-events:none}
+.route-name{
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:3px 7px;
+  background:var(--paper);color:var(--ink);
+  border:1.5px solid var(--ink);
+  box-shadow:2px 2px 0 var(--ink);
+  line-height:1.2;
+}
+.route-name .rn-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;
+  background:var(--ink);color:var(--paper);
+  font-weight:900;font-size:10px;
+  border-radius:50%;
+}
+.route-name-farm{background:var(--moss);color:var(--paper);border-color:var(--ink)}
+.route-name-farm .rn-num{background:var(--gold);color:var(--ink)}
+.route-name-restaurant{background:var(--rust);color:var(--paper);border-color:var(--ink)}
+.route-name-restaurant .rn-num{background:var(--paper);color:var(--ink)}
+.route-name-depot{background:var(--gold);color:var(--ink);border-color:var(--ink)}
+.route-name-depot .rn-num{background:var(--ink);color:var(--gold)}
+
+/* =====================================================================
+   ROUTES on the map — clean glow on the winner; the "considering"
+   ghosts are very faint solid rust strokes, no dotted patterns.
+   ===================================================================== */
+.route-glow-pane{
+  /* CSS pulse for the winner route — applied via Leaflet pane */
+  filter:drop-shadow(0 0 6px rgba(238,108,44,0.55));
+}
+@keyframes route-pulse{
+  0%,100%{filter:drop-shadow(0 0 4px rgba(238,108,44,0.45))}
+  50%   {filter:drop-shadow(0 0 12px rgba(238,108,44,0.85))}
+}
+.route-glow-pane{animation:route-pulse 2.4s ease-in-out infinite}
+
+/* =====================================================================
+   ROUTE-FLASH — the live swarm during solving.
+   Each spawn from pushFlashRoute (app.js) gets a STRAIGHT-LINE polyline
+   with this class. Schematic, no road geometry — the swarm is supposed
+   to read as "the model is considering candidate route shapes", not
+   "the road network 8 different ways", and straight lines paint
+   instantly with no OSRM round-trip per flash.
+   We animate stroke-dashoffset 100→0 to TRACE the route along its
+   length — each flash reads as a deliberate path being drawn. Then the
+   line fades. pathLength=100 on the SVG path normalises dasharray:100
+   so the keyframe pace is the same regardless of the path's real length.
+   ===================================================================== */
+/* Two-stage trace, monotonic on both axes:
+     0–40%: line draws itself out while opacity rises 0 → 0.85
+     40–100%: stroke is fully drawn; opacity falls 0.85 → 0
+   No mid-animation opacity bumps, no four-keyframe seesaw. The eye
+   reads it as one continuous motion ("a path was drawn, then it
+   faded") instead of "line popped in, blinked, fell out". */
+@keyframes route-flash-trace{
+  0%   {stroke-dashoffset:100;opacity:0}
+  40%  {stroke-dashoffset:0;  opacity:0.85}
+  100% {stroke-dashoffset:0;  opacity:0}
+}
+.route-flash{
+  stroke-dasharray:100;
+  stroke-dashoffset:100;
+  animation:route-flash-trace 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+  pointer-events:none;
+}
+
+/* =====================================================================
+   CALCULATE BUTTON — lives INSIDE the run-cost card now (not floating
+   on the map). Inline variant fills the card width and bottom-anchors.
+   ===================================================================== */
+.calc-btn{
+  display:inline-flex;align-items:center;gap:14px;
+  padding:18px 26px;
+  background:var(--ink);color:var(--paper);
+  border:2px solid var(--ink);
+  font-family:'Archivo',sans-serif;
+  cursor:pointer;text-align:left;
+  box-shadow:5px 5px 0 var(--rust);
+  transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s;
+}
+.calc-btn:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:8px 8px 0 var(--rust);
+  background:var(--rust);
+  border-color:var(--rust);
+}
+.calc-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--rust)}
+.calc-btn:disabled{
+  opacity:0.55;cursor:not-allowed;
+  transform:none;box-shadow:5px 5px 0 var(--ink-faint);
+  background:var(--ink);border-color:var(--ink);
+}
+.calc-btn-inline{
+  width:100%;justify-content:center;
+  margin-top:12px;
+  padding:14px 20px;
+}
+.calc-btn-inline .calc-arrow{font-size:24px}
+.calc-arrow{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:30px;
+  line-height:1;color:var(--gold);
+}
+.calc-label{
+  display:block;
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:17px;
+  letter-spacing:0.05em;text-transform:uppercase;line-height:1;
+}
+.calc-sub{
+  display:block;margin-top:4px;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold);
+}
+
+/* MAP TOAST — lightweight error / status bubble bottom-left of map */
+.map-toast{
+  position:absolute;left:18px;bottom:18px;z-index:500;
+  background:var(--ink);color:var(--paper);
+  border:1.5px solid var(--ink);
+  padding:10px 14px;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  box-shadow:4px 4px 0 var(--rust);
+  max-width:60%;line-height:1.45;
+}
+.map-toast.error{background:var(--rust);border-color:var(--rust);box-shadow:4px 4px 0 var(--ink)}
+.map-toast.hidden{display:none}
+
+/* =====================================================================
+   FORM ELEMENTS — matches modal-input pattern in vitrina.bg
+   ===================================================================== */
+.form-row{
+  display:flex;flex-direction:column;gap:5px;
+  margin-top:6px;
+  position:relative;
+}
+.form-row > label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mid);
+}
+.ip{
+  width:100%;
+  padding:8px 10px;
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;
+  color:var(--ink);outline:none;
+  transition:box-shadow 0.12s;
+}
+.ip:focus{box-shadow:3px 3px 0 var(--rust)}
+.ip::placeholder{color:var(--ink-faint);font-weight:400}
+select.ip{cursor:pointer;background:var(--paper)}
+
+.form-row-qty{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.form-row-qty > label{grid-column:1 / -1}
+.qty-input{position:relative}
+.qty-input .ip{padding-right:32px}
+.qty-unit{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  color:var(--ink-mid);letter-spacing:0.05em;
+}
+.btn-add{
+  padding:8px 14px;
+  background:var(--ink);color:var(--paper);
+  border:1.5px solid var(--ink);
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.12s;line-height:1.2;
+}
+.btn-add:hover{background:var(--rust);border-color:var(--rust)}
+.btn-tiny{
+  padding:4px 9px;
+  background:transparent;color:var(--ink-mid);
+  border:1px solid var(--rule-strong);
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;line-height:1.2;
+}
+.btn-tiny:hover{color:var(--ink);border-color:var(--ink)}
+
+/* AUTOCOMPLETE — matches the brand: paper-card popup with ink border */
+.autocomplete{
+  position:absolute;left:0;right:0;top:100%;
+  z-index:50;
+  background:var(--paper-card);
+  border:1.5px solid var(--ink);
+  margin-top:2px;
+  display:none;
+  max-height:240px;overflow-y:auto;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.autocomplete.visible{display:block}
+.autocomplete-row{
+  padding:8px 12px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  border-bottom:1px solid var(--rule);
+  font-family:'Archivo',sans-serif;font-size:13px;color:var(--ink);
+}
+.autocomplete-row:last-child{border-bottom:0}
+.autocomplete-row:hover,.autocomplete-row.active{background:var(--gold);color:var(--ink)}
+.autocomplete-row .ar-meta{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mid);
+}
+
+/* =====================================================================
+   ORDER LINES
+   ===================================================================== */
+.lines-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:10px;padding-top:8px;
+  border-top:1px solid var(--rule);
+}
+.order-lines{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.empty-hint{
+  padding:12px;
+  background:var(--paper-warm);
+  border:1px dashed var(--rule-strong);
+  font-family:'Archivo',sans-serif;font-style:italic;font-size:12.5px;
+  color:var(--ink-mid);text-align:center;
+}
+.order-line{
+  display:grid;
+  grid-template-columns:1fr auto auto auto;
+  gap:8px;align-items:center;
+  padding:7px 10px;
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+}
+.ol-meta{display:flex;flex-direction:column;gap:1px;min-width:0}
+.ol-rest{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--rust);
+}
+.ol-prod{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;
+  color:var(--ink);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ol-qty{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:14px;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.ol-rev{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;
+  letter-spacing:0.04em;color:var(--rust);font-variant-numeric:tabular-nums;
+}
+.ol-rm{
+  background:transparent;border:0;color:var(--ink-faint);
+  font-family:'Archivo',sans-serif;font-size:18px;font-weight:600;
+  cursor:pointer;line-height:1;padding:2px 6px;
+}
+.ol-rm:hover{color:var(--rust)}
+
+/* =====================================================================
+   ORDER BASKET HEAD — kicker + title left, scenario/order chips right
+   ===================================================================== */
+.basket-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+}
+.basket-head-actions{
+  display:flex;gap:6px;flex-shrink:0;margin-top:2px;
+}
+.bh-btn{
+  padding:6px 9px;
+  background:var(--paper);color:var(--ink);
+  border:1.5px solid var(--ink);
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;line-height:1;transition:all 0.1s;white-space:nowrap;
+}
+.bh-btn:hover{background:var(--gold);transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--ink)}
+.bh-btn-primary{background:var(--ink);color:var(--paper)}
+.bh-btn-primary:hover{background:var(--rust);border-color:var(--rust);color:var(--paper)}
+
+/* =====================================================================
+   ORDER TOTAL (bottom of basket card) — live revenue + chef-saving
+   comparison vs MercaBarna. The comparison line shows what the same
+   kg would cost a chef going through their MercaBarna distributor;
+   negative diff = Vitrina is cheaper for the chef.
+   ===================================================================== */
+.order-total{
+  margin:8px -16px -14px;padding:12px 16px 14px;
+  background:var(--paper-warm);
+  border-top:2px solid var(--ink);
+}
+.ot-main{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.ot-main strong{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:21px;
+  font-variant-numeric:tabular-nums;color:var(--ink);
+}
+.ot-main.placeholder strong{color:var(--ink-faint)}
+.ot-comp{
+  margin-top:5px;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:0.04em;color:var(--ink-mid);
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+}
+.ot-comp strong{
+  font-weight:800;font-size:11.5px;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+.ot-comp.empty strong{color:var(--ink-faint)}
+.ot-comp.good strong{color:#2f7d3a}   /* clear, bright green so "lower" reads as a win at a glance */
+.ot-comp.bad  strong{color:#c5392a}   /* matches the rust palette but pushed redder so "higher" alarms */
+
+/* =====================================================================
+   RUN COST CARD — compact, single-line rows, breakdown link top-right
+   ===================================================================== */
+.rc-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.rc-breakdown{
+  background:transparent;border:0;
+  padding:0;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--rust);
+  border-bottom:1px solid var(--rust);line-height:1;padding-bottom:1px;
+  transition:color 0.1s;
+}
+.rc-breakdown:hover{color:var(--ink);border-color:var(--ink)}
+.rc-breakdown:disabled{opacity:0.35;cursor:not-allowed}
+
+.rc-rows{
+  display:flex;flex-direction:column;
+  margin-top:4px;
+}
+.rc-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:7px 0;
+  border-bottom:1px solid var(--rule);
+  font-family:'Archivo',sans-serif;font-size:13px;color:var(--ink);
+}
+.rc-row:last-child{border-bottom:0}
+.rc-row strong{
+  font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;
+  color:var(--ink);
+}
+.rc-row.placeholder strong{color:var(--ink-faint)}
+
+/* =====================================================================
+   CALCULATE BUTTON — three states swapped via #rc-slot innerHTML
+       idle    → big black CTA with rust drop-shadow
+       solving → animated dots, disabled
+       done    → big result block (gross profit € + %), gold on ink
+   The same .calc-btn class is reused; modifier classes flip the look.
+   ===================================================================== */
+.rc-slot{margin-top:10px}
+.rc-clear{
+  display:block;margin:8px auto 0;
+  background:transparent;border:0;
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-faint);
+  cursor:pointer;padding:4px 8px;line-height:1;
+}
+.rc-clear:hover{color:var(--rust)}
+
+/* SOLVING state — same footprint as the calc button so the layout
+   doesn't jump on click. Pulsating ellipsis sells "thinking". */
+.calc-solving{
+  width:100%;
+  background:var(--ink);color:var(--paper);
+  border:2px solid var(--ink);
+  padding:18px 20px;
+  display:flex;flex-direction:column;align-items:stretch;gap:4px;
+  box-shadow:5px 5px 0 var(--rust);
+  font-family:'Archivo',sans-serif;text-align:center;
+}
+.calc-solving .cs-label{
+  font-weight:900;font-size:17px;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--paper);text-align:center;
+}
+.calc-solving .cs-label .dots{display:inline-block;width:1.6em;text-align:left;color:var(--gold)}
+.calc-solving .cs-progress{
+  /* inline-block + a hard min-width gives the longest expected string
+     ("VROOM confirming winner…", ~24ch) a stable footprint so digit
+     transitions ("considering 9/614" → "considering 100/614") never
+     reflow the parent flex column. The previous rule only locked
+     min-height; that meant horizontal jiggle persisted whenever the
+     map repaint stole a frame and the centred text re-anchored. */
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);
+  font-variant-numeric:tabular-nums;
+  min-height:14px;min-width:24ch;
+  text-align:center;white-space:nowrap;
+  align-self:center;
+}
+/* The rust↔gold box-shadow flicker that used to live here looked like a
+   broken element rather than a thinking one, especially when other map
+   work stole frames mid-pulse. Replaced with a smooth opacity breathe on
+   the label so motion stays inside the text and the box itself is rock
+   steady — no compositor work, no perceived flicker, no jaggies when
+   the user pans the map mid-solve. */
+@keyframes calc-breathe{
+  0%,100%{opacity:1}
+  50%   {opacity:0.62}
+}
+.calc-solving .cs-label{animation:calc-breathe 1.6s ease-in-out infinite}
+
+/* DONE state — the headline number Peter cares about. Gross profit in
+   gold on ink. Big enough to read across the room; the percentage and
+   "gross profit · excl. salary" line carry the honest framing. Adds
+   a "Calculate again" affordance below the number. */
+.calc-result{
+  width:100%;
+  background:var(--ink);color:var(--gold);
+  border:2px solid var(--ink);
+  padding:16px 18px 14px;
+  display:flex;flex-direction:column;align-items:stretch;
+  box-shadow:5px 5px 0 var(--rust);
+  cursor:pointer;text-align:center;transition:all 0.14s;
+}
+.calc-result:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--rust)}
+.calc-result.bad{background:var(--rust);color:var(--paper)}
+.calc-result.bad:hover{box-shadow:8px 8px 0 var(--ink)}
+.calc-result .cr-label{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.16em;text-transform:uppercase;color:rgba(243,185,77,0.7);
+  margin-bottom:2px;
+}
+.calc-result.bad .cr-label{color:rgba(255,255,255,0.7)}
+.calc-result .cr-num{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;
+  letter-spacing:-0.02em;line-height:1;font-variant-numeric:tabular-nums;
+  color:var(--gold);
+}
+.calc-result.bad .cr-num{color:var(--paper)}
+.calc-result .cr-pct{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;
+  letter-spacing:0.06em;color:var(--gold);margin-top:3px;
+  font-variant-numeric:tabular-nums;
+}
+.calc-result.bad .cr-pct{color:var(--paper)}
+.calc-result .cr-foot{
+  margin-top:8px;padding-top:7px;border-top:1px solid rgba(243,185,77,0.25);
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:9.5px;
+  letter-spacing:0.12em;text-transform:uppercase;color:rgba(243,185,77,0.65);
+}
+.calc-result.bad .cr-foot{border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.7)}
+
+/* shared cost number style (used by breakdown modal too) */
+.cost-num{
+  font-family:'Archivo',sans-serif;font-weight:900;font-variant-numeric:tabular-nums;
+  letter-spacing:-0.03em;line-height:1;color:var(--ink);
+}
+.cost-num-big{font-size:32px}
+.cost-num.rust{color:var(--rust)}
+.cost-num.gold{color:var(--gold-deep)}
+
+/* Shared table style for the breakdown modal */
+.cost-table{width:100%;border-collapse:collapse;margin-top:4px}
+.cost-table td{
+  padding:7px 0;
+  border-bottom:1px solid var(--rule);
+  font-family:'Archivo',sans-serif;font-size:12.5px;color:var(--ink-soft);
+}
+.cost-table td:first-child{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-mid);
+}
+.cost-table td:last-child{
+  text-align:right;font-weight:800;color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.vroom-banner{
+  margin-top:8px;padding:8px 10px;
+  background:var(--ink);color:var(--gold);
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  text-align:center;line-height:1.4;
+}
+
+/* Route list — used inside the breakdown modal */
+.bd-route{list-style:none;counter-reset:step;margin-top:4px}
+.bd-route li{
+  counter-increment:step;
+  padding:8px 8px 8px 36px;position:relative;
+  font-family:'Archivo',sans-serif;font-size:12.5px;color:var(--ink);
+  border-bottom:1px solid var(--rule);
+}
+.bd-route li:last-child{border-bottom:0}
+.bd-route li::before{
+  content:counter(step);
+  position:absolute;left:0;top:8px;
+  width:26px;height:26px;
+  background:var(--ink);color:var(--paper);
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.bd-route li.depot::before{background:var(--gold);color:var(--ink)}
+.bd-route li.farm::before{background:var(--moss);color:var(--paper)}
+.bd-route li.restaurant::before{background:var(--rust);color:var(--paper)}
+.bd-route .rt-detail{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--ink-mid);margin-top:2px;
+}
+
+.runners-list{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.runner-row{
+  display:flex;justify-content:space-between;gap:10px;
+  padding:7px 10px;
+  background:var(--paper);
+  border:1px solid var(--rule-strong);
+  font-family:'Archivo',sans-serif;font-size:12px;
+  color:var(--ink-soft);
+}
+.runner-row .rr-combo{
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.runner-row .rr-cost{
+  font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+}
+.runner-row.infeasible{color:var(--ink-faint);font-style:italic}
+.runner-row.infeasible .rr-cost{color:var(--ink-faint)}
+
+.decision-log{list-style:none;margin-top:6px;display:flex;flex-direction:column;gap:5px}
+.decision-log li{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  padding:6px 10px;
+  background:var(--paper-warm);
+  border-left:3px solid var(--rust);
+  font-family:'Archivo',sans-serif;font-size:11.5px;color:var(--ink-soft);
+}
+.decision-log li .dl-title{
+  font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.decision-log li .dl-cost{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+}
+
+/* (.map-overlay + .mo-row + .map-status were removed — distance and
+   drive time now render AS TEXT on the polyline midpoint via the
+   .route-stat label, not in a corner-floating panel. Calculate lives in
+   the sidebar with its own progress sub-label.) */
+
+/* =====================================================================
+   "OPEN IN GOOGLE MAPS" CTA — bottom-right of the map view, hidden
+   until setCalcState('done') unhides it and writes the href.
+   The href is a path-style Maps URL of every stop in order
+   (depot → farms → restaurants → depot) so the chef just hits it and
+   drives. Sits above leaflet's default zoom/attribution chrome via z-index.
+   ===================================================================== */
+.map-gmaps{
+  position:absolute;right:18px;bottom:18px;z-index:600;
+  display:inline-flex;align-items:center;gap:11px;
+  padding:11px 16px 11px 13px;
+  background:#fff;color:var(--ink);
+  border:2px solid var(--ink);
+  text-decoration:none;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);
+  transition:transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  font-family:'Archivo',sans-serif;
+  /* Reserve a touch target on phones; doesn't affect desktop layout. */
+  min-height:46px;
+}
+.map-gmaps:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:6px 6px 0 var(--ink);
+  background:var(--paper);
+}
+.map-gmaps:active{
+  transform:translate(0,0);
+  box-shadow:2px 2px 0 var(--ink);
+}
+.gm-pin{flex:0 0 22px;display:block}
+.gm-text{display:flex;flex-direction:column;line-height:1.05;gap:2px}
+.gm-text-top{
+  font-weight:800;font-size:13px;letter-spacing:-0.005em;color:var(--ink);
+  text-transform:none;
+}
+.gm-text-sub{
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:9.5px;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mid);
+}
+.gm-arrow{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;
+  color:var(--rust);line-height:1;margin-left:4px;
+  transition:transform 0.12s ease;
+}
+.map-gmaps:hover .gm-arrow{transform:translateX(3px)}
+@media(max-width:720px){
+  .map-gmaps{right:10px;bottom:10px;padding:9px 12px 9px 11px}
+  .gm-text-sub{display:none}
+}
+
+/* =====================================================================
+   BREAKDOWN MODAL — near-full-viewport explainer. The point of this
+   modal is to make every number feel earned: hero, then step 1/2/3,
+   then the bet (vs MercaBarna), then the route, then the runners-up.
+   ===================================================================== */
+.modal-wide{max-width:780px}
+.modal-tall{max-height:88vh;overflow:hidden}
+.modal-tall .modal-head{flex-shrink:0}
+
+/* Full-viewport variant for the breakdown explainer.
+   Doubled-class selector (.modal.modal-fullsize) so it beats the base
+   .modal{max-width:480px} rule in the cascade — without this the modal
+   gets clamped to 480px and the 3-column report grid collapses. */
+.modal.modal-fullsize{
+  max-width:1760px;width:calc(100vw - 32px);max-height:94vh;
+  overflow:hidden;
+}
+.modal.modal-fullsize .modal-head{flex-shrink:0;padding-bottom:14px}
+.bd-body{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding-right:6px;margin-right:-6px;
+  display:flex;flex-direction:column;gap:18px;
+  scrollbar-width:thin;scrollbar-color:var(--rule-strong) transparent;
+}
+.bd-body::-webkit-scrollbar{width:6px}
+.bd-body::-webkit-scrollbar-thumb{background:var(--rule-strong);border-radius:3px}
+
+.modal-title{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;
+  letter-spacing:-0.02em;text-transform:uppercase;color:var(--ink);
+  margin-top:2px;line-height:1.1;
+}
+.modal-title em{
+  font-family:inherit;font-style:normal;color:var(--rust);
+  background:rgba(238,108,44,0.16);padding:0 0.06em;
+}
+.modal-sub{margin-bottom:6px}
+
+/* HERO — three big takeaway numbers (chef saved · vitrina profit · farmer earned) */
+.bd-hero{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border:2px solid var(--ink);
+}
+.bd-hero-block{
+  padding:18px 20px;
+  display:flex;flex-direction:column;gap:6px;
+  border-right:1.5px solid var(--ink);
+  background:var(--paper-warm);
+}
+.bd-hero-block:last-child{border-right:0}
+.bd-hero-chef{background:var(--paper-warm)}
+.bd-hero-vit{background:var(--ink);color:var(--gold)}
+.bd-hero-vit .kicker{color:var(--gold)}
+.bd-hero-farm{background:var(--paper-warm)}
+.bd-hero-num{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:32px;
+  letter-spacing:-0.025em;line-height:1;font-variant-numeric:tabular-nums;
+  color:var(--ink);margin-top:2px;
+}
+.bd-hero-vit .bd-hero-num{color:var(--gold)}
+.bd-hero-num.bad{color:var(--rust)}
+.bd-hero-vit .bd-hero-num.bad{color:var(--paper)}
+.bd-hero-sub{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mid);
+}
+.bd-hero-vit .bd-hero-sub{color:rgba(243,185,77,0.7)}
+@media(max-width:760px){.bd-hero{grid-template-columns:1fr}.bd-hero-block{border-right:0;border-bottom:1.5px solid var(--ink)}}
+
+/* STEPS — numbered Khan-Academy style explanation blocks */
+.bd-step{
+  display:grid;grid-template-columns:48px 1fr;gap:14px;
+  padding:14px 16px;
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  align-items:start;
+}
+.bd-step-num{
+  width:42px;height:42px;
+  background:var(--rust);color:var(--paper);
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.bd-step-result-block .bd-step-num{background:var(--ink);color:var(--gold)}
+.bd-step-route .bd-step-num{background:var(--moss)}
+.bd-step-alts .bd-step-num{background:var(--ink-mid)}
+.bd-step-body{min-width:0}
+.bd-step-title{
+  display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:17px;
+  letter-spacing:-0.01em;color:var(--ink);line-height:1.15;
+  text-transform:none;
+}
+.bd-step-result{
+  font-family:'Archivo',sans-serif;font-weight:900;font-variant-numeric:tabular-nums;
+  font-size:22px;color:var(--rust);letter-spacing:-0.02em;flex-shrink:0;
+}
+.bd-step-result-block .bd-step-result{color:var(--gold-deep)}
+.bd-step-explain{
+  margin-top:6px;
+  font-family:'Archivo',sans-serif;font-size:13px;color:var(--ink-soft);
+  line-height:1.5;
+}
+.bd-step-explain em{font-style:italic;color:var(--ink)}
+.bd-step-math{
+  margin-top:8px;padding:10px 12px;
+  background:var(--paper-warm);border-left:3px solid var(--rust);
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+}
+.bd-step-math strong{font-weight:800}
+.bd-caveat{
+  margin-top:10px;padding:10px 12px;
+  background:rgba(238,108,44,0.08);border:1px dashed var(--rust);
+  font-family:'Archivo',sans-serif;font-size:11.5px;color:var(--ink-soft);
+  line-height:1.5;
+}
+.bd-caveat strong{color:var(--rust);font-weight:800}
+.bd-caveat a{color:var(--rust);text-decoration:underline}
+
+/* per-line tables (revenue, goods, van) — left-aligned product/farm,
+   right-aligned € amount */
+.bd-line-table{width:100%;border-collapse:collapse;margin-top:10px}
+.bd-line-table td{
+  padding:7px 0;
+  border-bottom:1px solid var(--rule);
+  font-family:'Archivo',sans-serif;font-size:12.5px;color:var(--ink);
+  vertical-align:top;
+}
+.bd-line-table tr:last-child td{border-bottom:0}
+.bd-line-table td:last-child{
+  text-align:right;font-weight:800;font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.bd-line-table td small{
+  display:block;margin-top:2px;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-mid);
+}
+.bd-line-table tfoot td{
+  border-top:2px solid var(--ink);border-bottom:0;
+  padding-top:10px;font-weight:900;font-size:14px;color:var(--ink);
+}
+
+/* THE BET — head-to-head against MercaBarna mayorista */
+.bd-bet{
+  padding:18px 20px;
+  background:var(--ink);color:var(--paper);
+  border:2px solid var(--ink);
+}
+.bd-bet .kicker{color:var(--gold)}
+.bd-bet-title{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;
+  letter-spacing:-0.01em;color:var(--paper);line-height:1.2;
+  text-transform:none;margin-top:4px;
+}
+.bd-bet-cols{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;
+}
+@media(max-width:760px){.bd-bet-cols{grid-template-columns:1fr}}
+.bd-bet-col{
+  padding:14px;background:rgba(255,255,255,0.05);
+  border:1px solid rgba(243,185,77,0.25);
+}
+.bd-bet-col .bd-line-table td{color:var(--paper);border-color:rgba(255,255,255,0.12)}
+.bd-bet-col .bd-line-table td:last-child{color:var(--gold)}
+.bd-bet-col .bd-line-table td small{color:rgba(255,255,255,0.5)}
+.bd-bet-takeaway{
+  margin-top:14px;padding:12px 14px;
+  background:var(--gold);color:var(--ink);
+  font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;
+  line-height:1.5;
+}
+.bd-bet-takeaway strong{font-weight:900;color:var(--rust)}
+.bd-bet .bd-caveat{
+  background:rgba(243,185,77,0.08);border-color:rgba(243,185,77,0.4);
+  color:rgba(255,255,255,0.85);
+}
+.bd-bet .bd-caveat strong{color:var(--gold)}
+.bd-bet .bd-caveat a{color:var(--gold)}
+
+/* legacy — kept around in case any other modal still uses these */
+.bd-headline{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  padding:14px 16px;margin-top:10px;
+  background:var(--paper-warm);
+  border:1.5px solid var(--ink);
+}
+.bd-headline-block{display:flex;flex-direction:column;gap:5px}
+.bd-headline-block.right{align-items:flex-end;text-align:right}
+
+.bd-cols{
+  display:grid;grid-template-columns:1.1fr 1fr;gap:18px;
+  margin-top:14px;
+}
+@media(max-width:680px){.bd-cols{grid-template-columns:1fr}}
+.bd-section{margin-top:14px}
+
+/* =====================================================================
+   MODAL — add stock
+   ===================================================================== */
+.modal-bg{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(14,26,20,0.45);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.hidden{display:none}
+.modal{
+  width:100%;max-width:480px;
+  /* Cap modal height at the viewport so the inner content scrolls
+     instead of pushing the modal off-screen. The modal-head stays at
+     the top, scenario list / breakdown body scrolls. */
+  max-height:90vh;
+  background:var(--paper);
+  border:2px solid var(--ink);
+  box-shadow:8px 8px 0 var(--rust);
+  padding:18px 18px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  overflow:hidden;
+}
+.modal-head{flex-shrink:0}
+/* Scenario list inside the picker scrolls when there are more
+   scenarios than fit in the modal height. */
+#scenarios-modal .scenario-list{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding-right:4px;margin-right:-4px;
+  scrollbar-width:thin;scrollbar-color:var(--rule) transparent;
+}
+#scenarios-modal .scenario-list::-webkit-scrollbar{width:6px}
+#scenarios-modal .scenario-list::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
+.modal-sub{flex-shrink:0}
+.modal-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:10px;border-bottom:1px solid var(--rule);
+}
+.modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.modal-grid > div{display:flex;flex-direction:column;gap:5px}
+.modal-grid label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mid);
+}
+.modal-foot{display:flex;justify-content:flex-end;margin-top:6px}
+
+/* =====================================================================
+   RESPONSIVE — degrade gracefully on narrow screens
+   ===================================================================== */
+@media(max-width:1280px){
+  :root{--col-left-w:340px;--col-right-w:340px}
+}
+@media(max-width:1080px){
+  :root{--col-left-w:300px;--col-right-w:320px;--gutter:10px}
+  .card{padding:12px 12px 10px}
+  .card-title{font-size:17px}
+}
+@media(max-width:880px){
+  /* On small screens, fall back to vertical scroll (the simulator is
+     primarily a desktop tool — phone reviewers see a usable but stacked
+     version) */
+  html,body{height:auto;min-height:100%;overflow:visible}
+  .stage{
+    position:static;
+    grid-template-columns:1fr;
+    height:auto;padding-top:calc(var(--ticker-h) + var(--nav-h) + var(--gutter));
+  }
+  .col-map{height:60vh;grid-row:1}
+  .col-right{grid-row:2}
+  .col-right-flex{overflow:visible}
+  .col-right-flex .card-grow{flex:0 0 auto !important;display:block}
+  .col-right .lines-head{margin-top:12px}
+  .col-right .order-lines-scroll{max-height:320px;margin-top:10px}
+  .col-right .order-total{margin:10px -12px -10px;padding:12px}
+  .col-left{grid-row:3;max-height:75vh}
+  .col-left .farm-cards-scroll{max-height:60vh;overflow:auto}
+  #map{position:relative;height:100%}
+}
+
+/* =====================================================================
+   SCENARIOS — axis badges (replace the prose tagline)
+   Three small monospace pills under the title — restaurants, items,
+   kg, and (if multi-restaurant) spread tag. The point: the title IS
+   the spec, the simulator is the answer.
+   ===================================================================== */
+.s-axes{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.s-badge{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10.5px;
+  letter-spacing:0.04em;color:var(--ink-mid);
+  background:#fff;border:1px solid var(--rule);
+  padding:2px 7px;border-radius:0;line-height:1.3;
+}
+.s-badge-kg{color:var(--ink);border-color:var(--ink)}
+.s-badge-cluster{background:#e8f1e2;border-color:#7a9b66;color:#3f5a2e}
+.s-badge-mixed  {background:#f7eed6;border-color:#a89253;color:#5a4a18}
+.s-badge-spread {background:#f4dcd6;border-color:#a85a3d;color:#5a2412}
+.scenario.on .s-badge{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.32);color:rgba(255,255,255,0.85)}
+.scenario.on .s-badge-cluster,
+.scenario.on .s-badge-mixed,
+.scenario.on .s-badge-spread,
+.scenario.on .s-badge-kg{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4);color:#fff}
+
+/* =====================================================================
+   MODELING REPORT — opens from the nav, scores every scenario in the
+   picker against the same cost model the simulator uses. Inline SVG-
+   free; bars are pure CSS (a centred zero line + two coloured fills).
+   ===================================================================== */
+.report-body{
+  display:flex;flex-direction:column;gap:24px;
+  padding-top:14px;overflow-y:auto;flex:1 1 auto;min-height:0;
+  padding-right:6px;margin-right:-6px;
+}
+.rep-h{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;
+  letter-spacing:-0.01em;color:var(--ink);margin:0 0 8px;
+}
+.rep-sub{
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.5;
+  color:var(--ink-mid);margin:0 0 12px;
+}
+.rep-sub-hint{font-style:italic;font-size:12px;color:var(--ink-faint);margin-top:10px}
+
+/* The three headline numbers */
+.rep-three{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  padding-bottom:8px;border-bottom:1px solid var(--rule);
+}
+.rep-num{
+  background:var(--paper);border:1.5px solid var(--ink);
+  padding:14px 16px;display:flex;flex-direction:column;gap:6px;
+}
+.rep-num-big{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;
+  letter-spacing:-0.02em;line-height:1;color:var(--ink);
+}
+.rep-num-sub{
+  font-family:'Archivo',sans-serif;font-size:11.5px;line-height:1.5;
+  color:var(--ink-mid);
+}
+.rep-num-sub span{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ink)}
+@media(max-width:900px){.rep-three{grid-template-columns:1fr}}
+
+.rep-prose p{
+  font-family:'Archivo',sans-serif;font-size:13.5px;line-height:1.6;
+  color:var(--ink);margin:0 0 10px;
+}
+.rep-prose strong{color:var(--rust)}
+
+/* The bar table — one row per scenario, click to load */
+.rep-table{display:flex;flex-direction:column;gap:6px}
+.rep-row{
+  display:grid;
+  grid-template-columns:minmax(220px, 2.4fr) 3fr minmax(70px, auto);
+  gap:14px;align-items:center;
+  background:var(--paper);border:1px solid var(--rule);
+  padding:10px 14px;cursor:pointer;text-align:left;
+  font-family:'Archivo',sans-serif;
+  transition:transform .1s,border-color .1s;
+}
+.rep-row:hover{transform:translate(-1px,-1px);border-color:var(--ink)}
+.rep-row-title{display:flex;flex-direction:column;gap:4px;min-width:0}
+.rep-row-name{font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.25}
+.rep-row-axes{display:flex;flex-wrap:wrap;gap:5px}
+.rep-row-axis{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:0.03em;color:var(--ink-faint);
+  background:#fff;border:1px solid var(--rule);padding:1px 5px;
+}
+.rep-row-bar{
+  position:relative;height:18px;background:#fafaf6;
+  border:1px solid var(--rule);
+}
+.rep-row-bar-mid{
+  position:absolute;top:0;bottom:0;left:50%;width:1px;
+  background:var(--ink);
+}
+.rep-row-bar-fill{
+  position:absolute;top:0;bottom:0;
+}
+.rep-row-bar-pos{left:50%;background:#7a9b66}
+.rep-row-bar-neg{right:50%;background:#a85a3d}
+.rep-row-num{
+  font-family:'JetBrains Mono',monospace;font-weight:800;font-size:14px;
+  text-align:right;color:var(--ink);
+}
+.rep-row-loss     .rep-row-num{color:#a85a3d}
+.rep-row-breakeven .rep-row-num{color:#a89253}
+.rep-row-profit   .rep-row-num{color:#3f5a2e}
+
+/* Roadmap + vs-wholesaler + levers */
+.rep-roadmap-list,.rep-levers-list{
+  margin:0;padding-left:22px;
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.6;color:var(--ink);
+}
+.rep-roadmap-list li,.rep-levers-list li{margin-bottom:8px}
+.rep-roadmap-list strong,.rep-levers-list strong{color:var(--ink)}
+.rep-vs-cols{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;
+}
+@media(max-width:900px){.rep-vs-cols{grid-template-columns:1fr}}
+.rep-vs-col{
+  background:var(--paper);border:1.5px solid var(--ink);
+  padding:12px 14px;
+}
+.rep-vs-col ul{
+  margin:8px 0 0;padding-left:18px;
+  font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.55;color:var(--ink);
+}
+.rep-vs-col li{margin-bottom:5px}
+.rep-vs-takeaway{
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.55;
+  color:var(--ink);background:#f7eed6;border-left:3px solid var(--rust);
+  padding:10px 14px;margin:0;
+}
+
+/* =====================================================================
+   MODELING REPORT · PART 1 — the scale question
+   Two SVG charts (cost-per-order curves + per-city capex bars), each
+   followed by a plain-words takeaway block. The point: the numerical
+   substance of the report sits here. The per-morning section below is
+   the daily-operating view, not the strategic answer.
+   ===================================================================== */
+.rep-h-big{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;
+  letter-spacing:-0.02em;line-height:1.2;color:var(--ink);
+  margin:4px 0 10px;
+}
+.rep-scale{
+  display:flex;flex-direction:column;gap:22px;
+  padding-bottom:22px;border-bottom:2px solid var(--ink);
+}
+.rep-scale-head .rep-sub strong{color:var(--ink)}
+
+/* THREE-COLUMN GRID — three answers, side by side.
+   Each column = chart-wrap + claim block. The grid auto-collapses to
+   2-col then 1-col on narrower viewports via minmax(440px, 1fr). */
+.rep-grid{
+  /* 360px min so 3-across kicks in at modal widths ≥ ~1140px,
+     i.e. covers any viewport ≥ ~1180px. The charts re-render at
+     viewBox 540×440 and scale-to-fit, so 360px is plenty readable. */
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  gap:22px;
+}
+.rep-col{
+  display:flex;flex-direction:column;gap:14px;
+}
+.rep-col .rep-chart-wrap{flex:0 0 auto}
+
+.rep-claim-col{
+  background:var(--paper);border-left:3px solid var(--rust);
+  padding:14px 16px;display:flex;flex-direction:column;gap:8px;
+  flex:1 1 auto;
+}
+.rep-claim-col .rep-claim-num{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:38px;
+  letter-spacing:-0.03em;color:var(--rust);line-height:1;
+}
+.rep-claim-col .rep-claim-head{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;
+  color:var(--ink);letter-spacing:-0.005em;line-height:1.3;
+}
+.rep-claim-col p{
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.55;
+  color:var(--ink);margin:0;
+}
+.rep-claim-col p strong{color:var(--ink);font-weight:800}
+.rep-claim-col p em{font-style:italic;color:var(--rust)}
+.rep-claim-col .rep-claim-math{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;
+  color:var(--ink-mid);background:#fafaf6;
+  border-left:2px solid var(--rule);padding:6px 10px;margin-top:2px;
+}
+
+/* THE BRIDGE — full-width punchline below the 3-column grid.
+   Ties chart-1's "small slice" to chart-2/3's "huge cheap volume". */
+.rep-bridge{
+  background:#1b1b18;color:#fafaf6;padding:18px 22px;
+  border-radius:0;border-left:4px solid var(--rust);
+}
+.rep-bridge-head{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;
+  color:#fafaf6;margin-bottom:8px;letter-spacing:-0.01em;
+}
+.rep-bridge p{
+  font-family:'Archivo',sans-serif;font-size:14px;line-height:1.6;
+  color:#e8e2d0;margin:0;
+}
+.rep-bridge p strong{color:#fafaf6;font-weight:800}
+.rep-bridge p em{color:#c9a14a;font-style:italic;font-weight:600}
+
+.rep-chart-wrap{
+  background:#fafaf6;border:1.5px solid var(--ink);
+  padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px;
+}
+.rep-chart-title{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;
+  color:var(--ink);
+}
+.rep-chart-sub{
+  font-family:'Archivo',sans-serif;font-size:11.5px;color:var(--ink-mid);
+  margin-bottom:6px;
+}
+.rep-chart{width:100%;overflow-x:auto}
+.rep-svg{display:block;width:100%;height:auto;max-height:420px}
+.rep-chart-bars .rep-svg{max-height:300px}
+
+.rep-chart-legend{
+  display:flex;flex-wrap:wrap;gap:14px 18px;margin-top:8px;
+  padding-top:10px;border-top:1px dashed var(--rule);
+}
+.rep-leg{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Archivo',sans-serif;font-size:11.5px;color:var(--ink);
+}
+.rep-leg .dot{display:inline-block;width:14px;height:3px;border-radius:0}
+.rep-leg .dash{display:inline-block;width:14px;height:0;border-top:1.5px dashed var(--ink);opacity:0.6}
+.rep-leg-vit  .dot{background:#a85a3d}
+.rep-leg-dist .dot{background:#7a9b66}
+.rep-leg-oca  .dot{background:#5a7ba8}
+
+.rep-claim{
+  font-family:'Archivo',sans-serif;font-size:14px;line-height:1.55;
+  color:var(--ink);margin:0 0 4px;font-weight:500;
+}
+.rep-claims{
+  display:flex;flex-direction:column;gap:0;
+  border-top:1px solid var(--ink);
+}
+.rep-claim-row{
+  display:grid;grid-template-columns:160px 1fr;gap:24px;align-items:start;
+  padding:18px 4px;border-bottom:1px solid var(--rule);
+}
+.rep-claim-num{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:42px;
+  letter-spacing:-0.03em;color:var(--rust);line-height:1;
+  padding-top:2px;
+}
+.rep-claim-txt{
+  font-family:'Archivo',sans-serif;font-size:14px;line-height:1.55;color:var(--ink);
+}
+.rep-claim-head{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:15.5px;
+  color:var(--ink);letter-spacing:-0.005em;margin-bottom:6px;line-height:1.3;
+}
+.rep-claim-txt p{margin:0 0 10px;font-size:13.5px;line-height:1.6;color:var(--ink)}
+.rep-claim-txt strong{color:var(--ink);font-weight:800}
+.rep-claim-math{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.5;
+  color:var(--ink-mid);background:#fafaf6;border-left:2px solid var(--rule);
+  padding:6px 10px;margin-top:4px;
+}
+@media(max-width:720px){
+  .rep-claim-row{grid-template-columns:1fr;gap:8px}
+  .rep-claim-num{font-size:32px}
+}
+
+.rep-takeaway{
+  background:var(--paper);border-left:3px solid var(--rust);
+  padding:14px 16px;
+}
+.rep-tk-h{
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;
+  text-transform:uppercase;letter-spacing:0.06em;color:var(--rust);
+  margin:0 0 8px;
+}
+.rep-tk-list,.rep-tk-bullets{
+  margin:0;padding-left:22px;
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.55;color:var(--ink);
+}
+.rep-tk-list li,.rep-tk-bullets li{margin-bottom:7px}
+.rep-tk-list strong{color:var(--ink)}
+.rep-takeaway p{
+  font-family:'Archivo',sans-serif;font-size:13px;line-height:1.6;
+  color:var(--ink);margin:0 0 10px;
+}
+.rep-takeaway p:last-child{margin-bottom:0}
+.rep-tk-emph{
+  background:#f7eed6;border:1px solid var(--rust);padding:10px 14px;
+  margin-top:10px !important;
+}
+
+.rep-falsify{
+  font-family:'Archivo',sans-serif;font-size:11.5px;line-height:1.55;
+  color:var(--ink-mid);background:#fafaf6;
+  border-left:2px solid var(--rule);padding:8px 12px;margin:6px 0 0;
+}
+.rep-falsify strong{color:var(--ink);font-weight:700}
+
+.rep-caveats{
+  background:#fafaf6;border:1px dashed var(--ink-mid);padding:12px 16px;
+}
+.rep-caveats h5{margin-top:0}
+.rep-caveats ul{
+  margin:0;padding-left:20px;
+  font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.55;color:var(--ink);
+}
+.rep-caveats li{margin-bottom:6px}
+
+.rep-daily-head{
+  margin-top:6px;
+}
+.rep-daily-head .kicker{color:var(--ink-mid)}
+
+.rep-sources-list{
+  margin:0;padding-left:20px;
+  font-family:'Archivo',sans-serif;font-size:12px;line-height:1.55;color:var(--ink-mid);
+}
+.rep-sources-list li{margin-bottom:8px}
+.rep-sources-list code{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:#fafaf6;padding:1px 5px;border:1px solid var(--rule);
+}
+
+.hidden{display:none !important}
+
+/* Calculation evidence uses the existing run-cost card typography. */
+.route-feasibility { margin: 8px 0 12px; font-size: 11px; line-height: 1.5; color: var(--muted, #666); }
+
+/* Route callouts use measured screen-space placement, retaining exact pins. */
+.route-callout-wrap { width: 0 !important; height: 0 !important; }
+.route-callout-wrap .route-name, .route-callout-wrap .route-stat { position: absolute; left: 0; top: 0; width: max-content; }
+.route-callout-wrap .route-name { white-space: normal; align-items: center; }
+.route-callout-wrap .rn-name { min-width: 0; overflow-wrap: anywhere; }
+.route-callout-wrap .rn-num { flex-shrink: 0; width: auto; min-width: 16px; padding: 0 4px; border-radius: 9px; white-space: nowrap; }
+.section-heading { font-family: 'Archivo', sans-serif; font-size: 18px; font-weight: 800; line-height: 1.2; color: var(--ink); }
+.lines-head { justify-content: flex-end; }
+.logo { text-transform: none; }
+@media (max-width: 720px) { .nav { padding: 0 12px; gap: 12px; } .logo { font-size: 18px; line-height: 1.12; min-width: 0; } .nav-cta { flex-shrink: 0; } }

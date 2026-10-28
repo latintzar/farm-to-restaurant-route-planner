@@ -1,0 +1,157 @@
+{
+  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "farms": [
+    {
+      "id": "brisa",
+      "name": "Brisa Farm",
+      "region": "Barcelona example",
+      "town": "Sant Boi area",
+      "lat": 41.3531,
+      "lng": 2.0712,
+      "color": "hsl(90 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "tomato": {
+          "stock_kg": 90,
+          "moq_kg": 20,
+          "price_eur_kg": 1.58
+        },
+        "courgette": {
+          "stock_kg": 130,
+          "moq_kg": 15,
+          "price_eur_kg": 1.02
+        },
+        "green-bean": {
+          "stock_kg": 95,
+          "moq_kg": 10,
+          "price_eur_kg": 2.64
+        }
+      }
+    },
+    {
+      "id": "riuet",
+      "name": "Riuet Farm",
+      "region": "Barcelona example",
+      "town": "El Prat area",
+      "lat": 41.3386,
+      "lng": 2.0798,
+      "color": "hsl(104 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "potato": {
+          "stock_kg": 420,
+          "moq_kg": 25,
+          "price_eur_kg": 0.68
+        },
+        "onion": {
+          "stock_kg": 240,
+          "moq_kg": 20,
+          "price_eur_kg": 0.77
+        },
+        "carrot": {
+          "stock_kg": 240,
+          "moq_kg": 20,
+          "price_eur_kg": 0.88
+        }
+      }
+    },
+    {
+      "id": "trevol",
+      "name": "Trèvol Farm",
+      "region": "Barcelona example",
+      "town": "Sant Vicenç area",
+      "lat": 41.3707,
+      "lng": 2.0493,
+      "color": "hsl(118 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "tomato": {
+          "stock_kg": 85,
+          "moq_kg": 15,
+          "price_eur_kg": 1.72
+        },
+        "lettuce": {
+          "stock_kg": 110,
+          "moq_kg": 10,
+          "price_eur_kg": 1.18
+        }
+      }
+    },
+    {
+      "id": "nacre",
+      "name": "Nacre Farm",
+      "region": "Barcelona example",
+      "town": "Viladecans area",
+      "lat": 41.3246,
+      "lng": 2.0589,
+      "color": "hsl(132 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "lettuce": {
+          "stock_kg": 150,
+          "moq_kg": 10,
+          "price_eur_kg": 1.32
+        },
+        "cucumber": {
+          "stock_kg": 140,
+          "moq_kg": 15,
+          "price_eur_kg": 1.01
+        },
+        "onion": {
+          "stock_kg": 160,
+          "moq_kg": 20,
+          "price_eur_kg": 0.84
+        }
+      }
+    },
+    {
+      "id": "menta",
+      "name": "Menta Farm",
+      "region": "Barcelona example",
+      "town": "Sant Feliu area",
+      "lat": 41.3974,
+      "lng": 2.0376,
+      "color": "hsl(146 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "courgette": {
+          "stock_kg": 160,
+          "moq_kg": 20,
+          "price_eur_kg": 1.16
+        },
+        "cucumber": {
+          "stock_kg": 125,
+          "moq_kg": 10,
+          "price_eur_kg": 1.12
+        },
+        "green-bean": {
+          "stock_kg": 110,
+          "moq_kg": 15,
+          "price_eur_kg": 2.82
+        }
+      }
+    },
+    {
+      "id": "llum",
+      "name": "Llum Farm",
+      "region": "Barcelona example",
+      "town": "Viladecans north",
+      "lat": 41.3452,
+      "lng": 2.0208,
+      "color": "hsl(160 34% 39%)",
+      "synthetic": true,
+      "inventory": {
+        "potato": {
+          "stock_kg": 380,
+          "moq_kg": 30,
+          "price_eur_kg": 0.76
+        },
+        "carrot": {
+          "stock_kg": 260,
+          "moq_kg": 15,
+          "price_eur_kg": 0.94
+        }
+      }
+    }
+  ]
+}

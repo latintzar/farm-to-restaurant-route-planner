@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Farm-to-restaurant route planner</title>
+<meta name="description" content="Farm pickups and restaurant deliveries on actual roads, with fictional Barcelona businesses and transparent modeled costs."/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.css"/>
+<script src="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js"></script>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="demo/replay.css"/>
+</head>
+<body class="recorded-example">
+
+<!-- ===========================================================
+     NAV — logo only. The black ticker eyebrow (with VROOM/OSRM
+     status dots) and the "back to pitch" CTA were removed; Peter
+     wanted a quieter top chrome. The solver/OSRM ping functions
+     in app.js null-check the (now absent) #solver-status / #osrm-status
+     DOM nodes and silently no-op, so this is a pure visual edit.
+     =========================================================== -->
+<nav class="nav">
+  <h1 class="logo">Farm-to-restaurant route planner</h1>
+  <!-- The Modeling report opens a separate modal that takes the same
+       scenarios listed in data/scenarios.json, scores each one against
+       the simulator's cost model, and tells you in plain words at what
+       point a morning starts making money. The button is intentionally
+       visible from the first frame so you can read the model BEFORE
+       playing with any scenario. -->
+  <button class="nav-cta" id="open-report" title="Compare modeled basket economics">
+    <span class="nav-cta-icon">▦</span>
+    <span class="nav-cta-text">Modeling report</span>
+  </button>
+<p class="recorded-notice">Recorded Barcelona example · fictional businesses · road data from 28 October 2026. <a href="https://github.com/latintzar/farm-to-restaurant-route-planner#run-locally">Run with your own data</a></p></nav>
+
+<!-- ===========================================================
+     STAGE — three-column layout
+     =========================================================== -->
+<div class="stage">
+
+  <!-- LEFT — farm supply only -->
+  <aside class="col col-left">
+    <section class="card card-grow card-flex">
+      <h2 class="section-heading">Farm supply</h2>
+      <div class="toolbar">
+        <input id="farm-search" type="text" placeholder="Filter by product or farm…" autocomplete="off"/>
+        <button class="btn-tiny" id="farms-add">+ stock</button>
+      </div>
+      <!-- View toggle. "By farm" = one card per farm, products inside.
+           "By product" = one card per product, farms inside (so a chef
+           can ask "who has fennel?" in one glance). -->
+      <div class="supply-view-toggle" id="supply-view-toggle">
+        <button class="svt-btn on" data-view="farm">by farm</button>
+        <button class="svt-btn"    data-view="product">by product</button>
+      </div>
+      <div class="farm-cards-scroll">
+        <div class="farm-cards" id="farm-cards"></div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- CENTRE — map only. Distance + drive time are drawn AS A LABEL
+       on the chosen polyline (see renderRouteStatLabel in app.js), not
+       as a corner-floating card. Calculate lives in the sidebar.
+       The "open in Google Maps" CTA is hidden until a decision exists;
+       setCalcState('done') unhides it and sets href via buildGoogleMapsUrl. -->
+  <main class="col col-map">
+    <div id="map"></div>
+    <div id="map-toast" class="map-toast hidden"></div>
+    <a id="map-gmaps" class="map-gmaps hidden" target="_blank" rel="noopener noreferrer" href="#"
+       title="Open the optimised depot → farms → restaurants → depot route in Google Maps">
+      <!-- Google Maps pin (multi-colour, recognisable as the GMaps brand mark) -->
+      <svg class="gm-pin" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
+        <!-- yellow lower-right wedge -->
+        <path fill="#FBBC04" d="M22.4 7.6L9.5 22.5l3.7 3.1 3.6-4.2 8.4-9.7z"/>
+        <!-- green lower-left wedge -->
+        <path fill="#34A853" d="M9.5 22.5l-2.7 2.7c-.3.3-.3.7 0 1l2.6 2.5c.3.3.7.3 1 0l8.4-8.4z"/>
+        <!-- blue body -->
+        <path fill="#4285F4" d="M5.4 13.4c-.6 1.3-.9 2.7-.9 4.2 0 2.4.9 4.6 2.4 6.3l9.4-7.4z"/>
+        <!-- red top wedge -->
+        <path fill="#EA4335" d="M16 5.4c-4.5 0-8.4 2.6-10.6 6.4l11.5 5.6 6.7-6.6C22 7.7 19.2 5.4 16 5.4z"/>
+        <!-- white centre dot -->
+        <circle cx="16" cy="14.6" r="3.2" fill="#fff"/>
+      </svg>
+      <span class="gm-text">
+        <span class="gm-text-top">Open in Google Maps</span>
+        <span class="gm-text-sub">drive this route</span>
+      </span>
+      <span class="gm-arrow" aria-hidden="true">→</span>
+    </a>
+  </main>
+
+  <!-- RIGHT — basket grows to fill; run-cost card sticks to bottom -->
+  <aside class="col col-right col-right-flex">
+
+    <!-- ORDER BASKET — grows to fill remaining space; lines scroll inside.
+         Action buttons (scenario picker, new-order modal opener) sit in
+         the top-right of the card head — compact, not the giant CTAs they
+         used to be. Order total sits at the bottom and shows the live
+         "chef saves vs reference market" comparison inline. -->
+    <section class="card card-grow card-flex">
+      <div class="basket-head">
+        <div>
+          <h2 class="section-heading">Orders</h2>
+        </div>
+        <div class="basket-head-actions">
+          <button class="bh-btn" id="open-scenarios" title="Pick a prepared morning">▣&nbsp;scenarios</button>
+          <button class="bh-btn bh-btn-primary" id="open-add-order" title="Add an order line">+&nbsp;order</button>
+        </div>
+      </div>
+
+      <div class="lines-head">
+        <button class="btn-tiny" id="order-clear">clear basket</button>
+      </div>
+      <div class="order-lines-scroll">
+        <div class="order-lines" id="order-lines">
+          <div class="empty-hint">Empty. Pick a scenario or add an order.</div>
+        </div>
+      </div>
+
+      <!-- Order total = live revenue (BEFORE Calculate). The line under
+           it compares to what the SAME basket would cost the chef
+           through their HORECA distributor (~reference market × 1.30, MAPA
+           Observatorio), so the wedge shown matches the chef's real
+           alternative. The reference market direct (3am pickup) and mayorista
+           comparisons live inside the breakdown modal. -->
+      <div class="order-total">
+        <div class="ot-main">
+          <span class="kicker tight">Order total</span>
+          <strong id="cs-revenue">€—</strong>
+        </div>
+        <div class="ot-comp" id="cs-vs-mercabarna">vs modeled distributor · <strong>—</strong></div>
+      </div>
+    </section>
+
+    <!-- RUN COST + CALCULATE — always-visible compact skeleton (Goods,
+         Van+fuel, Driver, Drive time, Distance — one line each, no
+         sublines). The big primary slot at the bottom is the Calculate
+         button, which morphs through three states:
+            idle → "→ CALCULATE"
+            solving → "Solving… 12/89"
+            done → "+€436 · 23% gross profit" (big result block)
+         A tiny clear-result link drops in below the result. -->
+    <section class="card card-runcost">
+      <div class="rc-head">
+        <h2 class="section-heading">Route costs</h2>
+        <button class="rc-breakdown" id="open-breakdown">view breakdown →</button>
+      </div>
+
+      <div class="rc-rows">
+        <div class="rc-row"><span>Goods</span><strong id="cs-goods">€—</strong></div>
+        <div class="rc-row"><span>Van + fuel</span><strong id="cs-van">€—</strong></div>
+        <div class="rc-row"><span>Driver</span><strong id="cs-driver">€0</strong></div>
+        <div class="rc-row"><span>Drive time</span><strong id="cs-time">— min</strong></div>
+        <div class="rc-row"><span>Distance</span><strong id="cs-distance">— km</strong></div>
+      </div>
+
+      <p id="route-feasibility" class="route-feasibility" role="status">Route checks appear after calculation.</p>
+
+      <!-- Three-state slot: idle / solving / done. JS swaps the inner
+           HTML via setCalcState(). The button is always in the DOM so
+           keyboard focus works; only its appearance changes. -->
+      <div class="rc-slot" id="rc-slot">
+        <button id="calculate" class="calc-btn calc-btn-inline" type="button">
+          <span class="calc-arrow">→</span>
+          <span class="calc-label">Calculate</span>
+        </button>
+      </div>
+      <button class="rc-clear hidden" id="rc-clear" type="button">clear result</button>
+    </section>
+
+  </aside>
+
+</div>
+
+<!-- ===========================================================
+     MODAL · Scenarios picker
+     =========================================================== -->
+<div class="modal-bg hidden" id="scenarios-modal">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <div>
+        <span class="kicker">Prepared scenarios</span>
+        <h3 class="modal-title">Pick a morning <em>to run</em></h3>
+      </div>
+      <button class="btn-tiny" id="scenarios-close">×</button>
+    </div>
+    <p class="card-sub modal-sub">
+      Fictional Barcelona businesses, editable baskets and modeled commercial terms. Calculate uses your configured road service.
+    </p>
+    <div class="scenario-list" id="scenario-list"></div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     MODAL · Modeling report
+     The point: in plain words, at what point does a morning make
+     money? The math has three numbers (per-kg spread, daily floor,
+     break-even kg). Every scenario in scenarios.json is scored
+     against the same cost model so the table updates if you edit
+     scenarios. The bar chart is inline SVG; no chart library.
+     =========================================================== -->
+<div class="modal-bg hidden" id="report-modal">
+  <div class="modal modal-fullsize">
+    <div class="modal-head">
+      <h3 class="modal-title">Basket economics</h3>
+      <button class="btn-tiny" id="report-close">×</button>
+    </div>
+    <div class="report-body">
+      <section class="rep-daily-head">
+        <h4 class="rep-h-big">Example basket assumptions</h4>
+        <p class="rep-claim">Fictional prices and orders, authored 28 October 2026. This report uses a shape-based route estimate; Calculate uses the configured road service.</p>
+      </section>
+      <section class="rep-three">
+        <div class="rep-num">
+          <h4 class="rep-h">Product spread</h4>
+          <div class="rep-num-big" id="rep-spread">€—</div>
+          <div class="rep-num-sub">sale price <span id="rep-charge">€—</span>/kg minus farm price <span id="rep-pay">€—</span>/kg · catalogue average</div>
+        </div>
+        <div class="rep-num">
+          <h4 class="rep-h">Reference run cost</h4>
+          <div class="rep-num-big" id="rep-floor">€—</div>
+          <div class="rep-num-sub">1.5 driving hours and 22 km, with the configured van and driver billing buffers</div>
+        </div>
+        <div class="rep-num">
+          <h4 class="rep-h">Reference break-even weight</h4>
+          <div class="rep-num-big" id="rep-breakeven">— kg</div>
+          <div class="rep-num-sub">reference run cost ÷ catalogue-average product spread</div>
+        </div>
+      </section>
+      <section class="rep-scenarios">
+        <h4 class="rep-h">Scenario estimates</h4>
+        <div class="rep-table" id="rep-scenarios-table"></div>
+        <p class="rep-sub">Select a basket, then Calculate for its road-backed proposal and explicit route-check status. Baskets above vehicle capacity require split runs.</p>
+      </section>
+      <section class="rep-levers">
+        <h4 class="rep-h">Model inputs</h4>
+        <ul class="rep-levers-list">
+          <li><strong>Goods:</strong> selected supplier quantities × their example prices.</li>
+          <li><strong>Van and driver:</strong> driving hours plus the configured billing buffer, rounded up to whole hours; van rental has a daily cap.</li>
+          <li><strong>Fuel:</strong> road kilometres × the configured per-kilometre rate.</li>
+          <li><strong>Gross profit:</strong> sale revenue minus goods, van, fuel and driver. Other business overhead sits outside this figure.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     MODAL · New order (replaces the inline form)
+     =========================================================== -->
+<div class="modal-bg hidden" id="add-order-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <span class="kicker">New order line</span>
+        <h3 class="modal-title">A chef <em>called</em></h3>
+      </div>
+      <button class="btn-tiny" id="add-order-close">×</button>
+    </div>
+    <div class="form-row">
+      <label>Restaurant</label>
+      <select id="order-restaurant" class="ip"></select>
+    </div>
+    <div class="form-row form-row-search">
+      <label>Product</label>
+      <input type="text" id="order-product-search" class="ip" placeholder="search…" autocomplete="off"/>
+      <div class="autocomplete" id="order-product-autocomplete"></div>
+    </div>
+    <div class="form-row form-row-qty">
+      <label>Quantity</label>
+      <div class="qty-input">
+        <input type="number" id="order-qty" class="ip" min="1" step="1" value="50"/>
+        <span class="qty-unit">kg</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="order-add" class="btn-add">+ Add to basket</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     MODAL · Full decision breakdown — near-full-viewport explainer.
+     The point of this modal is to make every number useful for real
+     operating decisions. It walks the math step by step, then compares
+     this basket against the chef's observable status-quo supply chain.
+     =========================================================== -->
+<div class="modal-bg hidden" id="breakdown-modal">
+  <div class="modal modal-fullsize">
+    <div class="modal-head">
+      <div>
+        <span class="kicker">Decision breakdown</span>
+        <h3 class="modal-title" id="bd-title">Last decision</h3>
+      </div>
+      <button class="btn-tiny" id="breakdown-close">×</button>
+    </div>
+
+    <div class="bd-body">
+
+      <!-- ============================================
+           HEADLINE — the three numbers to check first
+           ============================================ -->
+      <section class="bd-hero">
+        <div class="bd-hero-block bd-hero-chef">
+          <div class="kicker tight">Savings vs modeled distributor</div>
+          <div class="bd-hero-num" id="bd-hero-chef">—</div>
+          <div class="bd-hero-sub" id="bd-hero-chef-sub">vs modeled distributor on the same kg</div>
+        </div>
+        <div class="bd-hero-block bd-hero-vit">
+          <div class="kicker tight">Modeled gross profit</div>
+          <div class="bd-hero-num" id="bd-hero-profit">—</div>
+          <div class="bd-hero-sub" id="bd-hero-profit-sub">after farms, van, paid driver</div>
+        </div>
+        <div class="bd-hero-block bd-hero-farm">
+          <div class="kicker tight">Farm payment vs modeled gate</div>
+          <div class="bd-hero-num" id="bd-hero-farmer">—</div>
+          <div class="bd-hero-sub">reference price × 0.79 comparison</div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           STEP 1 — what we charged
+           ============================================ -->
+      <section class="bd-step">
+        <div class="bd-step-num">1</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">What we charged the chefs <span class="bd-step-result" id="bd-step-revenue">€—</span></h4>
+          <p class="bd-step-explain">Each line is quantity × the example sale price in <code>data/products.json</code>. The reference-price ratio makes the selected assumption visible.</p>
+          <table class="bd-line-table" id="bd-revenue-table"><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- ============================================
+           STEP 2 — what we paid the farms
+           ============================================ -->
+      <section class="bd-step">
+        <div class="bd-step-num">2</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">What we paid the farms (COGS) <span class="bd-step-result" id="bd-step-goods">€—</span></h4>
+          <p class="bd-step-explain">Each pickup is quantity × that supplier’s example price. The browser compares goods, van, fuel and driver costs together. The route status records the capacity check and the selected bundle’s VROOM confirmation outcome.</p>
+          <table class="bd-line-table" id="bd-goods-table"><tbody></tbody></table>
+        </div>
+      </section>
+
+      <!-- ============================================
+           STEP 3 — what the morning cost us to operate
+           ============================================ -->
+      <section class="bd-step">
+        <div class="bd-step-num">3</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">What the morning cost us to operate <span class="bd-step-result" id="bd-step-van">€—</span></h4>
+          <p class="bd-step-explain">Van and driver costs use buffered drive time, rounded up to whole hours. Van rental has a daily cap; fuel scales with road distance. The inputs are illustrative rates authored in <code>data/depot.json</code>. The route returns to its starting depot.</p>
+          <table class="bd-line-table">
+            <tbody>
+              <tr>
+                <td>Van rental <small id="bd-van-fixed-explain">configured hourly rental and daily cap</small></td>
+                <td id="bd-van-fixed">—</td>
+              </tr>
+              <tr>
+                <td>Diesel <small id="bd-van-var-explain">road km × configured fuel rate</small></td>
+                <td id="bd-van-variable">—</td>
+              </tr>
+              <tr>
+                <td>Driver <small id="bd-driver-detail">configured buffered hourly driver cost</small></td>
+                <td id="bd-driver-cost">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="bd-source" id="bd-step3-sources">Example rates: van €12/h capped at €72/day, driver €24/h, fuel €0.18/km. Both time charges use a 35% buffer. Edit <code>data/depot.json</code> for your model.</p>
+        </div>
+      </section>
+
+      <!-- ============================================
+           STEP 4 — the bottom line
+           ============================================ -->
+      <section class="bd-step bd-step-result-block">
+        <div class="bd-step-num">=</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">Gross profit <span class="bd-step-result" id="bd-step-profit">€—</span></h4>
+          <p class="bd-step-explain bd-step-math" id="bd-profit-math">
+            Revenue <strong>€—</strong> &minus; COGS <strong>€—</strong> &minus; Van+driver <strong>€—</strong> = <strong>€—</strong>
+          </p>
+          <p class="bd-caveat">This figure covers the modeled goods and run costs. Add insurance, administration, sales and other business overhead to evaluate net earnings.</p>
+        </div>
+      </section>
+
+      <!-- ============================================
+           THE BET — vs the chef's real alternative (HORECA distributor)
+           ============================================ -->
+      <section class="bd-bet">
+        <div class="bd-bet-head">
+          <span class="kicker">The bet</span>
+          <h4 class="bd-bet-title">Example channel comparison</h4>
+        </div>
+        <div class="bd-bet-cols">
+          <div class="bd-bet-col">
+            <div class="kicker tight">Modeled distributor</div>
+            <table class="bd-line-table">
+              <tbody>
+                <tr><td>Chef pays distributor <small>reference price × 1.30</small></td><td id="bd-merca-chef">€—</td></tr>
+                <tr><td>Distributor margin <small>delivered price minus reference price</small></td><td id="bd-merca-mayorista">€—</td></tr>
+                <tr><td>Total channel spread <small>delivered price minus modeled gate</small></td><td id="bd-merca-spread">€—</td></tr>
+                <tr><td>Goes to the farmer <small>reference price × 0.79</small></td><td id="bd-merca-farmer">€—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bd-bet-col">
+            <div class="kicker tight">Selected proposal</div>
+            <table class="bd-line-table">
+              <tbody>
+                <tr><td>Restaurant pays <small>example quantities × example sale prices</small></td><td id="bd-bet-revenue">€—</td></tr>
+                <tr><td>Modeled gross profit <small>after farms + van + paid driver</small></td><td id="bd-bet-profit">€—</td></tr>
+                <tr><td>Goes to the farmers <small>selected supplier quantities × prices</small></td><td id="bd-bet-farmer">€—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="bd-bet-takeaway" id="bd-bet-takeaway">—</p>
+        <p class="bd-caveat">The comparison channel uses a reference-price multiplier of 1.30 for delivery and 0.79 for its farm-gate assumption. These authored example multipliers are independent of the actual supplier prices selected by the planner.</p>
+      </section>
+
+      <!-- ============================================
+           THE ROUTE
+           ============================================ -->
+      <section class="bd-step bd-step-route">
+        <div class="bd-step-num">→</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">Proposed route
+            <span class="bd-step-result" id="bd-step-route">—</span></h4>
+          <ol id="bd-route-list" class="bd-route"></ol>
+          <div class="vroom-banner" id="bd-vroom">—</div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           ALTERNATIVES — slider through the runners-up
+           ============================================ -->
+      <section class="bd-step bd-step-alts">
+        <div class="bd-step-num">⋯</div>
+        <div class="bd-step-body">
+          <h4 class="bd-step-title">Compared sourcing choices</h4>
+          <p class="bd-step-explain">
+            The browser compares sourcing choices using road distances and modeled costs.
+            This list shows the selected proposal and up to twelve alternatives.
+            The route status records the browser capacity check and optional VROOM confirmation.
+          </p>
+          <div id="bd-runners" class="runners-list"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===========================================================
+     MODAL · Add / edit stock on a farm
+     =========================================================== -->
+<div class="modal-bg hidden" id="add-stock-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="kicker">Add / edit stock</span>
+      <button class="btn-tiny" id="add-stock-close">×</button>
+    </div>
+    <div class="form-row">
+      <label>Farm</label>
+      <select id="add-stock-farm" class="ip"></select>
+    </div>
+    <div class="form-row form-row-search">
+      <label>Product</label>
+      <input type="text" id="add-stock-product" class="ip" placeholder="search…" autocomplete="off"/>
+      <div class="autocomplete" id="add-stock-autocomplete"></div>
+    </div>
+    <div class="modal-grid">
+      <div>
+        <label>Stock (kg)</label>
+        <input type="number" id="add-stock-qty" class="ip" min="0" step="5" value="50"/>
+      </div>
+      <div>
+        <label>Price (€/kg)</label>
+        <input type="number" id="add-stock-price" class="ip" min="0" step="0.05" value="1.40"/>
+      </div>
+      <div>
+        <label>MOQ (kg)</label>
+        <input type="number" id="add-stock-moq" class="ip" min="0" step="5" value="10"/>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button id="add-stock-save" class="btn-add">Save stock</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="demo/replay.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

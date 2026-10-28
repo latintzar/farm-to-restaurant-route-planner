@@ -1,0 +1,34 @@
+# Self-hosted VROOM for the routing simulator.
+#
+# Image source: ghcr.io/vroom-project/vroom-docker (the maintainers moved
+# from Docker Hub to GitHub Container Registry in 2024 — Docker Hub stopped
+# at v1.14.0-rc.2 in Nov 2023). v1.15.0 is the inherited version in this source.
+# https://github.com/VROOM-Project/vroom-docker/pkgs/container/vroom-docker
+#
+# The image bundles the vroom solver + vroom-express (a thin HTTP wrapper).
+# It expects either:
+#   (a) a routing backend (OSRM/Valhalla/ORS) to compute distance matrices, OR
+#   (b) explicit `matrices` in the request body — what we do.
+#
+# The simulator fetches a real road-distance matrix from OSRM (proxied via
+# Caddy on prod, hit directly on localhost), rounds the floats to ints
+# (VROOM is integer-only) and sends the matrix with every solve request.
+# So vroom-docker's bundled libosrm is never invoked.
+#
+# CORS: vroom-express has CORS open by default; on prod the browser hits a
+# same-origin /solve path proxied through Caddy, which side-steps CORS
+# anyway.
+
+services:
+  vroom:
+    image: ghcr.io/vroom-project/vroom-docker:v1.15.0
+    ports:
+      - "127.0.0.1:3000:3000"
+    # Optional: mount a custom config.yml to override threads / CORS / etc.
+    # volumes:
+    #   - ./config.yml:/conf/config.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
