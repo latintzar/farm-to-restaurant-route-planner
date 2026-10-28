@@ -1,26 +1,18 @@
 # Farm-to-restaurant route planner
 
-Plan shared farm pickups and restaurant deliveries on actual roads. Compare sourcing choices, inspect each stop and explain goods, van, fuel and driver costs.
+Farm-to-restaurant route planner is a tool for planning farm pickups and restaurant deliveries on real roads. Choose a basket or enter an order, compare sourcing and inspect route costs.
 
-The included Barcelona example has **six fictional farms, five fictional restaurants, eight products and six baskets**. Business names, coordinates, inventory, prices and orders were independently authored for this release. Road distances and geometry come from your configured OSRM service; the map retains its own attribution.
+[Website](https://atelierneyra.com/route-planner) · [Open preview](https://preview.atelierneyra.com/?project=route-planner) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
 
 ![Barcelona road route and calculated costs](docs/assets/route-planner-embedded.png)
-
-[Open the live planner](https://atelierneyra.com/preview/route-planner) · [Explore the recorded example](https://latintzar.github.io/farm-to-restaurant-route-planner/demo.html) · [Architecture and decisions](docs/ARCHITECTURE.md) · [Data format](data/README.md)
-
-## Try the example
-
-```sh
-python3 -m http.server 8080 --bind 127.0.0.1
-```
-
-Open `http://127.0.0.1:8080/demo.html`. The unchanged application calculates one fixed Barcelona basket using recorded road responses. It needs zero live routing or solver calls; the basemap and fonts load normally. The example businesses and rates are fictional. [Recording provenance](demo/README.md).
 
 ## Run locally
 
 Requirements: Python 3 for static serving and an OSRM car-routing service covering Barcelona. Node 18+ runs the dependency-free offline tests. VROOM is optional: it attempts a complete pickup/delivery confirmation after the browser selects a sourcing bundle.
 
 ```sh
+git clone https://github.com/latintzar/farm-to-restaurant-route-planner.git
+cd farm-to-restaurant-route-planner
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
@@ -86,3 +78,5 @@ The six native-adapter checks run with `python3 server/native/test_gateway.py`; 
 - [provenance/](provenance/): clean-export provenance and checks.
 
 Peter Neyra's code and newly authored example fixture use the [MIT licence](LICENSE). External software, map tiles and road data retain their terms; see [THIRD_PARTY.md](THIRD_PARTY.md). The historical sourced producer catalogue remains in its private case archive, with the [publisher's redistribution restriction](https://parcagrari.cat/info-legal) recorded in [data provenance](data/README.md).
+
+[made by atelier neyra](https://atelierneyra.com)
