@@ -25,4 +25,4 @@ Choose a basket or add orders → Compare farm supply → Calculate the route �
 
 The native hosted app calculates routes with the same planner, VROOM service and local Barcelona OSRM network supplied by the source. Farm names, customers, prices and stock in the public example are illustrative. Connect your own stock, customers, delivery costs and regional road data.
 
-Source: [docs/architecture.md](../docs/architecture.md), [docs/scenarios.md](../docs/scenarios.md), [docs/setup.md](../docs/setup.md).
+See the repository README for source and setup links.
