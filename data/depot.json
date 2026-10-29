@@ -9,8 +9,8 @@
     "synthetic": true
   },
   "vehicle": {
-    "label": "Illustrative 650 kg van",
-    "capacity_kg": 650,
+    "label": "Illustrative 1,200 kg van",
+    "capacity_kg": 1200,
     "cost_per_km_eur": 0.18,
     "van_hourly_eur": 12,
     "van_daily_cap_eur": 72,

@@ -1,17 +1,17 @@
 {
   "date_authored_utc": "2026-10-28",
-  "contribution": "New fictional commercial inputs prepared under Peter Neyra’s direction for his release",
+  "contribution": "Original nine basket designs restored with illustrative counterparties and prices/stock",
   "licence": "MIT",
   "record_counts": {
     "farms": 6,
-    "restaurants": 5,
-    "products": 8,
-    "scenarios": 6,
+    "restaurants": 15,
+    "products": 32,
+    "scenarios": 9,
     "depots": 1
   },
-  "coordinate_origin": "Manually selected illustrative Barcelona-area points; independent of historical scraped fixture",
-  "commercial_origin": "Independently authored fictional identities, product assignments, stock, MOQ, quantities and prices",
-  "selected_scenario": "barcelona-multi-stop",
+  "coordinate_origin": "Six existing synthetic producer points and fifteen illustrative customer points following the original Barcelona neighbourhood layout",
+  "commercial_origin": "Original product combinations and quantities; illustrative identities, prices, stock and MOQ",
+  "selected_scenario": "3r-cluster",
   "selected_scenario_summary": {
     "restaurants": 3,
     "products": 4,
@@ -19,10 +19,18 @@
   },
   "road_geometry_origin": "Configured OSRM service; separate provider and underlying road-data terms",
   "sha256": {
-    "data/depot.json": "89a6fcacce39c41c77f849a8233544c169e2bd5f6df35173ad28f4aca26bcfdb",
-    "data/farms.json": "b229170512dfe83ad077132a7de974122a896ed0e30d465e8fbe40f9cfc4c804",
-    "data/products.json": "f31a28cdcf458a32290c511284d025f94a5a946e2903a68a9b0d17aceb99d773",
-    "data/restaurants.json": "407793137108e316c4e1b33180f78328b76fdba9c5889c943a4dce779e990ba4",
-    "data/scenarios.json": "362def9f9a9c9b290fe209f45d55b0cdbc8df6fe6ade805b2a1a13c55d758624"
+    "data/depot.json": "3d30169ede0faed94e47555215a31a50c586e2e6948030d9d450a1285d399b33",
+    "data/farms.json": "af4a796f7652d0fb6c5cb0ec175455d0912567efc48991ead24c218daf17eef4",
+    "data/products.json": "9e3345615a1fa424305b950e6680e8d1453363801213ed572c0dd4d3f6479fc7",
+    "data/restaurants.json": "5d2e3fa34e7cf4f2db29497a4704576f3dd8c3d4dc53471a15a46446fa500d6c",
+    "data/scenarios.json": "5cd88e90b6085ea427414bcf29a85d1b41ed701bc62fe509fbd3df33dc784679"
+  },
+  "date_restored_utc": "2026-10-29",
+  "files": {
+    "data/depot.json": "3d30169ede0faed94e47555215a31a50c586e2e6948030d9d450a1285d399b33",
+    "data/farms.json": "af4a796f7652d0fb6c5cb0ec175455d0912567efc48991ead24c218daf17eef4",
+    "data/products.json": "9e3345615a1fa424305b950e6680e8d1453363801213ed572c0dd4d3f6479fc7",
+    "data/restaurants.json": "5d2e3fa34e7cf4f2db29497a4704576f3dd8c3d4dc53471a15a46446fa500d6c",
+    "data/scenarios.json": "5cd88e90b6085ea427414bcf29a85d1b41ed701bc62fe509fbd3df33dc784679"
   }
 }

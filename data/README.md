@@ -1,8 +1,10 @@
 # Example data
 
-These five runtime JSON files are a new, fictional Barcelona-area fixture authored on 28 October 2026 for Peter Neyra's release, under his direction. The contribution uses the repository's MIT licence. Names, coordinates, product assignments, quantities, stock, MOQs, prices and vehicle rates were independently selected for the example. They describe an illustrative planning world; any resemblance between an invented business name and a real business is incidental.
+The main application restores the original nine basket designs: small and large orders, clustered and dispersed drops, and a capacity-exceeding full-truck case. Their product combinations and quantities come from the original Vitrina routing simulator. Labels derive from actual lines, correcting historical counts and weights.
 
-The 12 manually chosen coordinate pairs are test points in the Barcelona area. A configured road service snaps/routes these points using its road network, and map/road data retain the relevant provider and OpenStreetMap terms. The commercial fixture's MIT release covers the newly authored inputs, rather than map tiles or returned road datasets.
+The public data contains six fictional farms, fifteen fictional restaurant customers and thirty-two products. Stock, MOQs, prices and vehicle rates are illustrative, editable assumptions. Customer points preserve the original scenarios’ Barcelona neighbourhood structure. The original restricted-source producer directory remains privately preserved.
+
+The separate recorded demo.html loads demo/data/, retaining its earlier fixture and exact recorded road requests. The live index.html loads data/ and calculates new routes.
 
 ## Why this is a fresh fixture
 

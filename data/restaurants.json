@@ -1,44 +1,124 @@
 {
-  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "_note": "Original nine basket designs with fictional customers, illustrative commercial inputs and a separately authored six-farm catalogue. Coordinates are Barcelona-area example points. MIT; road/map data retain their licences. Historical producer directory is privately preserved.",
   "restaurants": [
     {
-      "id": "vela",
+      "id": "vela-kitchen",
       "name": "Vela Kitchen",
-      "neighbourhood": "Eixample",
-      "lat": 41.3896,
-      "lng": 2.1632,
+      "neighbourhood": "Eixample Esquerra",
+      "lat": 41.38805,
+      "lng": 2.15638,
       "synthetic": true
     },
     {
-      "id": "mica",
+      "id": "mica-table",
       "name": "Mica Table",
-      "neighbourhood": "Ciutat Vella",
-      "lat": 41.3837,
-      "lng": 2.1709,
+      "neighbourhood": "El Raval",
+      "lat": 41.37835,
+      "lng": 2.17158,
       "synthetic": true
     },
     {
-      "id": "niu",
+      "id": "niu-kitchen",
       "name": "Niu Kitchen",
-      "neighbourhood": "Gràcia",
-      "lat": 41.4028,
-      "lng": 2.1594,
+      "neighbourhood": "Sant Antoni",
+      "lat": 41.37725,
+      "lng": 2.15818,
       "synthetic": true
     },
     {
-      "id": "bruna",
-      "name": "Bruna Table",
-      "neighbourhood": "Sant Martí",
-      "lat": 41.3955,
-      "lng": 2.1908,
+      "id": "alba-table",
+      "name": "Alba Table",
+      "neighbourhood": "El Born",
+      "lat": 41.38555,
+      "lng": 2.18178,
       "synthetic": true
     },
     {
-      "id": "riu",
-      "name": "Riu Kitchen",
-      "neighbourhood": "Poble-sec",
-      "lat": 41.3786,
-      "lng": 2.1518,
+      "id": "marina-kitchen",
+      "name": "Marina Kitchen",
+      "neighbourhood": "Barceloneta",
+      "lat": 41.37905,
+      "lng": 2.18968,
+      "synthetic": true
+    },
+    {
+      "id": "tilo-table",
+      "name": "Tilo Table",
+      "neighbourhood": "El Born",
+      "lat": 41.38525,
+      "lng": 2.18448,
+      "synthetic": true
+    },
+    {
+      "id": "cendra-kitchen",
+      "name": "Cendra Kitchen",
+      "neighbourhood": "El Raval",
+      "lat": 41.38205,
+      "lng": 2.17158,
+      "synthetic": true
+    },
+    {
+      "id": "terra-table",
+      "name": "Terra Table",
+      "neighbourhood": "Eixample Dreta",
+      "lat": 41.39125,
+      "lng": 2.16868,
+      "synthetic": true
+    },
+    {
+      "id": "lila-kitchen",
+      "name": "Lila Kitchen",
+      "neighbourhood": "Vila de Gràcia",
+      "lat": 41.40415,
+      "lng": 2.15418,
+      "synthetic": true
+    },
+    {
+      "id": "moli-table",
+      "name": "Moli Table",
+      "neighbourhood": "El Raval",
+      "lat": 41.37965,
+      "lng": 2.16798,
+      "synthetic": true
+    },
+    {
+      "id": "bosc-kitchen",
+      "name": "Bosc Kitchen",
+      "neighbourhood": "Eixample Dreta",
+      "lat": 41.39755,
+      "lng": 2.16868,
+      "synthetic": true
+    },
+    {
+      "id": "llum-table",
+      "name": "Llum Table",
+      "neighbourhood": "El Born",
+      "lat": 41.38695,
+      "lng": 2.18308,
+      "synthetic": true
+    },
+    {
+      "id": "sorra-kitchen",
+      "name": "Sorra Kitchen",
+      "neighbourhood": "El Raval",
+      "lat": 41.38155,
+      "lng": 2.17288,
+      "synthetic": true
+    },
+    {
+      "id": "bruc-table",
+      "name": "Bruc Table",
+      "neighbourhood": "Sants",
+      "lat": 41.37575,
+      "lng": 2.14168,
+      "synthetic": true
+    },
+    {
+      "id": "roure-kitchen",
+      "name": "Roure Kitchen",
+      "neighbourhood": "Sarrià",
+      "lat": 41.40285,
+      "lng": 2.12068,
       "synthetic": true
     }
   ]

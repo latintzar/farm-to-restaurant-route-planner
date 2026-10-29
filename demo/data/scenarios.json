@@ -1,0 +1,189 @@
+{
+  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "scenarios": [
+    {
+      "id": "small-basket",
+      "title": "Small basket",
+      "axes": {
+        "spread": "cluster"
+      },
+      "lines": [
+        {
+          "restaurant_id": "mica",
+          "product_id": "tomato",
+          "qty_kg": 20
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "potato",
+          "qty_kg": 30
+        }
+      ]
+    },
+    {
+      "id": "barcelona-multi-stop",
+      "title": "Barcelona multi stop",
+      "axes": {
+        "spread": "cluster"
+      },
+      "lines": [
+        {
+          "restaurant_id": "vela",
+          "product_id": "tomato",
+          "qty_kg": 40
+        },
+        {
+          "restaurant_id": "vela",
+          "product_id": "potato",
+          "qty_kg": 60
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "tomato",
+          "qty_kg": 35
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "courgette",
+          "qty_kg": 45
+        },
+        {
+          "restaurant_id": "niu",
+          "product_id": "potato",
+          "qty_kg": 45
+        },
+        {
+          "restaurant_id": "niu",
+          "product_id": "lettuce",
+          "qty_kg": 25
+        }
+      ]
+    },
+    {
+      "id": "city-wide",
+      "title": "City wide",
+      "axes": {
+        "spread": "spread"
+      },
+      "lines": [
+        {
+          "restaurant_id": "vela",
+          "product_id": "tomato",
+          "qty_kg": 45
+        },
+        {
+          "restaurant_id": "vela",
+          "product_id": "potato",
+          "qty_kg": 55
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "courgette",
+          "qty_kg": 40
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "onion",
+          "qty_kg": 30
+        },
+        {
+          "restaurant_id": "niu",
+          "product_id": "lettuce",
+          "qty_kg": 35
+        },
+        {
+          "restaurant_id": "niu",
+          "product_id": "cucumber",
+          "qty_kg": 25
+        },
+        {
+          "restaurant_id": "bruna",
+          "product_id": "green-bean",
+          "qty_kg": 45
+        },
+        {
+          "restaurant_id": "bruna",
+          "product_id": "carrot",
+          "qty_kg": 30
+        },
+        {
+          "restaurant_id": "riu",
+          "product_id": "potato",
+          "qty_kg": 60
+        },
+        {
+          "restaurant_id": "riu",
+          "product_id": "tomato",
+          "qty_kg": 35
+        }
+      ]
+    },
+    {
+      "id": "split-stock",
+      "title": "Split stock",
+      "axes": {
+        "spread": "cluster"
+      },
+      "lines": [
+        {
+          "restaurant_id": "vela",
+          "product_id": "tomato",
+          "qty_kg": 80
+        },
+        {
+          "restaurant_id": "niu",
+          "product_id": "tomato",
+          "qty_kg": 60
+        }
+      ]
+    },
+    {
+      "id": "capacity-boundary",
+      "title": "Capacity boundary",
+      "axes": {
+        "spread": "mixed"
+      },
+      "lines": [
+        {
+          "restaurant_id": "vela",
+          "product_id": "potato",
+          "qty_kg": 350
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "carrot",
+          "qty_kg": 200
+        },
+        {
+          "restaurant_id": "riu",
+          "product_id": "onion",
+          "qty_kg": 100
+        }
+      ]
+    },
+    {
+      "id": "split-runs",
+      "title": "Split runs",
+      "axes": {
+        "spread": "mixed"
+      },
+      "lines": [
+        {
+          "restaurant_id": "vela",
+          "product_id": "potato",
+          "qty_kg": 350
+        },
+        {
+          "restaurant_id": "mica",
+          "product_id": "carrot",
+          "qty_kg": 200
+        },
+        {
+          "restaurant_id": "riu",
+          "product_id": "onion",
+          "qty_kg": 101
+        }
+      ]
+    }
+  ]
+}

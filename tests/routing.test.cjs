@@ -58,18 +58,18 @@ function useVroom(transform = x => x) {
 
 test('scenario labels derive counts and weight from current fixture lines', () => {
   const scenarios = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/scenarios.json'))).scenarios;
-  const main = scenarios.find(s => s.id === 'barcelona-multi-stop');
+  const main = scenarios.find(s => s.id === '3r-cluster');
   assert.deepEqual(app.scenarioSummary({ ...main, axes: { restaurants: 99, items: 99, kg: 99, spread: 'cluster' } }),
     { restaurants: 3, items: 4, kg: 250, spread: 'cluster' });
   assert.match(app.scenarioLabel(main), /3 chefs · 4 items · 250kg/);
-  assert.deepEqual(app.scenarioSummary(scenarios.find(s => s.id === 'city-wide')),
-    { restaurants: 5, items: 8, kg: 400, spread: 'spread' });
+  assert.deepEqual(app.scenarioSummary(scenarios.find(s => s.id === '6r-spread')),
+    { restaurants: 6, items: 8, kg: 600, spread: 'spread' });
   setup();
   const products = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/products.json'))).products;
   STATE.productById = Object.fromEntries(products.map(p => [p.id, p]));
-  STATE.vehicle.capacity_kg = 650;
-  assert.equal(app.computeScenarioEconomics(scenarios.find(s => s.id === 'capacity-boundary')).capacityFeasible, true);
-  assert.equal(app.computeScenarioEconomics(scenarios.find(s => s.id === 'split-runs')).capacityFeasible, false);
+  STATE.vehicle.capacity_kg = 1200;
+  assert.equal(app.computeScenarioEconomics(scenarios.find(s => s.id === '6r-cluster')).capacityFeasible, true);
+  assert.equal(app.computeScenarioEconomics(scenarios.find(s => s.id === '11r-fulltruck')).capacityFeasible, false);
 });
 
 test('pickup-first fallback rejects a basket above capacity and accepts the exact boundary', async () => {

@@ -37,7 +37,7 @@ test('public fixture resolves every reference and admits its intended stock/MOQ 
       assert.ok(productById[line.product_id]);
       assert.ok(line.qty_kg > 0 && Number.isInteger(line.qty_kg * 1000));
     }
-    if (scenario.id === 'split-runs') {
+    if (scenario.id === '11r-fulltruck') {
       assert.throws(() => app.validateOrderCapacity(scenario.lines), { code: 'capacity-exceeded' });
       continue;
     }
@@ -56,6 +56,4 @@ test('public fixture resolves every reference and admits its intended stock/MOQ 
       }
     }
   }
-  const split = app.enumerateFarmCombos('tomato', 140);
-  assert.ok(split.every(c => c.farms.length === 2), 'split-stock should require two farms');
 });

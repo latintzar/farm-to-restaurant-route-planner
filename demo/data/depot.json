@@ -1,0 +1,23 @@
+{
+  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "depot": {
+    "id": "depot",
+    "name": "Example depot",
+    "subtitle": "Barcelona · pickup and return",
+    "lat": 41.3832,
+    "lng": 2.1408,
+    "synthetic": true
+  },
+  "vehicle": {
+    "label": "Illustrative 650 kg van",
+    "capacity_kg": 650,
+    "cost_per_km_eur": 0.18,
+    "van_hourly_eur": 12,
+    "van_daily_cap_eur": 72,
+    "van_billing_buffer_pct": 35,
+    "driver_hourly_eur": 24,
+    "driver_billing_buffer_pct": 35,
+    "driver_cost_eur": 0,
+    "avg_speed_kmh": 35
+  }
+}

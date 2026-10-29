@@ -16,7 +16,7 @@ class GatewayBounds(unittest.TestCase):
  def test_resource_and_command_shapes_are_bounded(self):
   examples=[]
   p=payload();p['options']={'g':True};examples.append(p)
-  p=payload();p['vehicles'][0]['capacity']=[650001];examples.append(p)
+  p=payload();p['vehicles'][0]['capacity']=[2000001];examples.append(p)
   p=payload();p['shipments'][0]['delivery']['id']=1;examples.append(p)
   p=payload();p['shipments'][0]['pickup']['location_index']=99;examples.append(p)
   p=payload();p['matrices']['car']['durations'][0][1]=float('nan');examples.append(p)

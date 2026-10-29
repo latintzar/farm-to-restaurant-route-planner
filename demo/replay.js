@@ -15,6 +15,7 @@
   };
   window.fetch = async (input, options) => {
     const url = new URL(typeof input === 'string' ? input : input.url, location.href);
+    if (url.origin === location.origin && /\/data\/(depot|farms|products|restaurants|scenarios)\.json$/.test(url.pathname)) return originalFetch('./demo/data/' + url.pathname.split('/').pop());
     if (url.hostname === 'recorded-example.invalid') {
       return new Response('{"code":"VROOM-not-configured-in-recorded-example"}', {
         status: 503, headers: {'Content-Type': 'application/json'},

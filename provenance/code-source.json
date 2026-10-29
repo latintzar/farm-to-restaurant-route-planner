@@ -17,12 +17,12 @@
     "New independently authored business fixture",
     "Provider-neutral sale/reference price field names and fictional-price copy",
     "Public report limited to editable basket economics; speculative historical scale projections omitted",
-    "Clean provenance, schema and local-service setup"
+    "Clean provenance, schema and local-service setup",
+    "Original nine basket designs restored; illustrative counterparties and prices; third-party producer compilation excluded"
   ],
   "omitted": [
     "All prior Git history",
     "Historical 37-producer catalogue and original sourced coordinates/eligibility",
-    "Historical restaurant/product/scenario/vehicle data",
     "Source workbooks and research/price exports",
     "Catalogue/price-seeding scripts dependent on historical research",
     "Owner deployment tooling, runtime databases and state"

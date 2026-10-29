@@ -13,9 +13,9 @@ from urllib.parse import urlsplit,unquote,parse_qs
 import re,urllib.request,urllib.error
 
 MAX_BODY=65536
-MAX_LOCATIONS=24
-MAX_SHIPMENTS=24
-MAX_CAPACITY=650000
+MAX_LOCATIONS=32
+MAX_SHIPMENTS=32
+MAX_CAPACITY=2000000
 SOLVER_SLOTS=threading.BoundedSemaphore(1)
 
 
@@ -30,12 +30,12 @@ def validate_payload(body):
     if not isinstance(vehicles,list) or len(vehicles)!=1:
         raise ValueError('This preview accepts one vehicle.')
     if not isinstance(shipments,list) or not 1<=len(shipments)<=MAX_SHIPMENTS:
-        raise ValueError('Use between 1 and 24 shipments.')
+        raise ValueError('Use between 1 and 32 shipments.')
     if not isinstance(matrices,dict) or set(matrices)!={'car'} or not isinstance(matrices['car'],dict) or set(matrices['car'])!={'durations','distances'}:
         raise ValueError('Provide duration and distance matrices for car.')
     car=matrices['car'];n=len(car['durations']) if isinstance(car['durations'],list) else 0
     if not 2<=n<=MAX_LOCATIONS:
-        raise ValueError('Use between 2 and 24 matrix locations.')
+        raise ValueError('Use between 2 and 32 matrix locations.')
     for key,maximum in [('durations',86400),('distances',10000000)]:
         matrix=car[key]
         if not isinstance(matrix,list) or len(matrix)!=n or any(not isinstance(row,list) or len(row)!=n for row in matrix):
@@ -48,7 +48,7 @@ def validate_payload(body):
     if not isinstance(vehicle,dict) or set(vehicle)!={'id','start_index','end_index','capacity'} or vehicle['start_index']!=0 or vehicle['end_index']!=0 or not integer(vehicle['id'],1,2147483647):
         raise ValueError('Use one identified vehicle returning to depot index 0.')
     if not isinstance(vehicle['capacity'],list) or len(vehicle['capacity'])!=1 or not integer(vehicle['capacity'][0],1,MAX_CAPACITY):
-        raise ValueError('Preview capacity is bounded at 650 kg, expressed in grams.')
+        raise ValueError('Preview capacity is bounded at 2,000 kg, expressed in grams.')
     ids=set()
     for shipment in shipments:
         if not isinstance(shipment,dict) or set(shipment)!={'amount','pickup','delivery'} or not isinstance(shipment['amount'],list) or len(shipment['amount'])!=1 or not integer(shipment['amount'][0],1,MAX_CAPACITY):
@@ -67,7 +67,7 @@ def validate_road_path(path):
     match=re.fullmatch(r'/(table|route)/v1/driving/([0-9.,;+-]+)',parsed.path)
     if not match:raise ValueError('Use the table or route endpoint.')
     points=match[2].split(';')
-    if not 2<=len(points)<=MAX_LOCATIONS:raise ValueError('Use between 2 and 24 locations.')
+    if not 2<=len(points)<=MAX_LOCATIONS:raise ValueError('Use between 2 and 32 locations.')
     for point in points:
         parts=point.split(',')
         if len(parts)!=2:raise ValueError('Use longitude and latitude pairs.')
@@ -148,7 +148,7 @@ class Gateway(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed=urlsplit(self.path)
         if parsed.path in ['/healthz','/solve']:
-            return self.reply(200,{'status':'ok','source':'c72407c6db167c708889ab8602d35210fc349401','solver':'VROOM 1.15.0','road_data':'local OSRM 5.27.1 / BBBike Barcelona / OpenStreetMap ODbL' if self.server.osrm_upstream else 'recorded real OSRM for 12 fictional locations; cache misses need local road service','limits':{'hour':self.server.rates.hour,'day':self.server.rates.day,'per_client_minute':self.server.rates.client_minute,'concurrent_solves':1,'solver_soft_seconds':3,'solver_wall_timeout_seconds':5,'solver_cpu_limit_seconds':4,'body_bytes':MAX_BODY,'locations':MAX_LOCATIONS,'shipments':MAX_SHIPMENTS}})
+            return self.reply(200,{'status':'ok','source_repository':'https://github.com/latintzar/farm-to-restaurant-route-planner','solver':'VROOM 1.15.0','road_data':'local OSRM 5.27.1 / BBBike Barcelona / OpenStreetMap ODbL' if self.server.osrm_upstream else 'recorded real OSRM for 12 fictional locations; cache misses need local road service','limits':{'hour':self.server.rates.hour,'day':self.server.rates.day,'per_client_minute':self.server.rates.client_minute,'concurrent_solves':1,'solver_soft_seconds':3,'solver_wall_timeout_seconds':5,'solver_cpu_limit_seconds':4,'body_bytes':MAX_BODY,'locations':MAX_LOCATIONS,'shipments':MAX_SHIPMENTS}})
         if parsed.path=='/config.js':
             prefix=self.headers.get('X-Route-Preview-Prefix','')
             if prefix and not re.fullmatch(r'/[a-z0-9/_-]{1,120}',prefix):return self.reply(400,{'error':'Invalid preview prefix.'})

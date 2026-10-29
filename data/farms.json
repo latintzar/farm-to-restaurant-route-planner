@@ -1,5 +1,5 @@
 {
-  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "_note": "Original nine basket designs with fictional customers, illustrative commercial inputs and a separately authored six-farm catalogue. Coordinates are Barcelona-area example points. MIT; road/map data retain their licences. Historical producer directory is privately preserved.",
   "farms": [
     {
       "id": "brisa",
@@ -11,20 +11,60 @@
       "color": "hsl(90 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "tomato": {
-          "stock_kg": 90,
-          "moq_kg": 20,
-          "price_eur_kg": 1.58
+        "tomato-round": {
+          "price_eur_kg": 0.75,
+          "stock_kg": 500,
+          "moq_kg": 5
         },
-        "courgette": {
-          "stock_kg": 130,
-          "moq_kg": 15,
-          "price_eur_kg": 1.02
+        "onion-figueras": {
+          "price_eur_kg": 1.47,
+          "stock_kg": 500,
+          "moq_kg": 5
         },
-        "green-bean": {
-          "stock_kg": 95,
-          "moq_kg": 10,
-          "price_eur_kg": 2.64
+        "carrot": {
+          "price_eur_kg": 1.82,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "cucumber": {
+          "price_eur_kg": 0.93,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "spinach": {
+          "price_eur_kg": 1.29,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "artichoke": {
+          "price_eur_kg": 2.0,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "pumpkin": {
+          "price_eur_kg": 0.75,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "asparagus-green": {
+          "price_eur_kg": 1.47,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "peach": {
+          "price_eur_kg": 1.82,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "melon-piel-de-sapo": {
+          "price_eur_kg": 0.93,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "lemon": {
+          "price_eur_kg": 1.29,
+          "stock_kg": 500,
+          "moq_kg": 5
         }
       }
     },
@@ -38,20 +78,60 @@
       "color": "hsl(104 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "potato": {
-          "stock_kg": 420,
-          "moq_kg": 25,
-          "price_eur_kg": 0.68
+        "tomato-pera": {
+          "price_eur_kg": 0.97,
+          "stock_kg": 300,
+          "moq_kg": 10
         },
-        "onion": {
-          "stock_kg": 240,
-          "moq_kg": 20,
-          "price_eur_kg": 0.77
+        "garlic": {
+          "price_eur_kg": 1.71,
+          "stock_kg": 300,
+          "moq_kg": 10
         },
-        "carrot": {
-          "stock_kg": 240,
-          "moq_kg": 20,
-          "price_eur_kg": 0.88
+        "courgette": {
+          "price_eur_kg": 2.08,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "lettuce-romaine": {
+          "price_eur_kg": 1.15,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "chard": {
+          "price_eur_kg": 1.52,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "cabbage": {
+          "price_eur_kg": 2.26,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "broccoli": {
+          "price_eur_kg": 0.97,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "asparagus-white": {
+          "price_eur_kg": 1.71,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "apricot": {
+          "price_eur_kg": 2.08,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "orange": {
+          "price_eur_kg": 1.15,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "apple": {
+          "price_eur_kg": 1.52,
+          "stock_kg": 300,
+          "moq_kg": 10
         }
       }
     },
@@ -65,15 +145,60 @@
       "color": "hsl(118 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "tomato": {
-          "stock_kg": 85,
-          "moq_kg": 15,
-          "price_eur_kg": 1.72
+        "tomato-round": {
+          "price_eur_kg": 0.81,
+          "stock_kg": 500,
+          "moq_kg": 5
         },
-        "lettuce": {
-          "stock_kg": 110,
-          "moq_kg": 10,
-          "price_eur_kg": 1.18
+        "potato": {
+          "price_eur_kg": 1.19,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "carrot": {
+          "price_eur_kg": 1.96,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "aubergine": {
+          "price_eur_kg": 2.34,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "spinach": {
+          "price_eur_kg": 1.38,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "leek": {
+          "price_eur_kg": 1.77,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "pumpkin": {
+          "price_eur_kg": 0.81,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "cauliflower": {
+          "price_eur_kg": 1.19,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "peach": {
+          "price_eur_kg": 1.96,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "strawberry": {
+          "price_eur_kg": 2.34,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "lemon": {
+          "price_eur_kg": 1.38,
+          "stock_kg": 500,
+          "moq_kg": 5
         }
       }
     },
@@ -87,20 +212,60 @@
       "color": "hsl(132 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "lettuce": {
-          "stock_kg": 150,
-          "moq_kg": 10,
-          "price_eur_kg": 1.32
+        "tomato-pera": {
+          "price_eur_kg": 1.03,
+          "stock_kg": 300,
+          "moq_kg": 10
         },
-        "cucumber": {
-          "stock_kg": 140,
-          "moq_kg": 15,
-          "price_eur_kg": 1.01
+        "onion-yellow": {
+          "price_eur_kg": 1.43,
+          "stock_kg": 300,
+          "moq_kg": 10
         },
-        "onion": {
-          "stock_kg": 160,
-          "moq_kg": 20,
-          "price_eur_kg": 0.84
+        "courgette": {
+          "price_eur_kg": 2.23,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "pepper-red": {
+          "price_eur_kg": 0.84,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "chard": {
+          "price_eur_kg": 1.63,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "green-bean": {
+          "price_eur_kg": 2.03,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "broccoli": {
+          "price_eur_kg": 1.03,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "mushroom": {
+          "price_eur_kg": 1.43,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "apricot": {
+          "price_eur_kg": 2.23,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "watermelon": {
+          "price_eur_kg": 0.84,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "apple": {
+          "price_eur_kg": 1.63,
+          "stock_kg": 300,
+          "moq_kg": 10
         }
       }
     },
@@ -114,20 +279,55 @@
       "color": "hsl(146 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "courgette": {
-          "stock_kg": 160,
-          "moq_kg": 20,
-          "price_eur_kg": 1.16
+        "potato": {
+          "price_eur_kg": 1.27,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "onion-figueras": {
+          "price_eur_kg": 1.68,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "aubergine": {
+          "price_eur_kg": 2.51,
+          "stock_kg": 500,
+          "moq_kg": 5
         },
         "cucumber": {
-          "stock_kg": 125,
-          "moq_kg": 10,
-          "price_eur_kg": 1.12
+          "price_eur_kg": 1.07,
+          "stock_kg": 500,
+          "moq_kg": 5
         },
-        "green-bean": {
-          "stock_kg": 110,
-          "moq_kg": 15,
-          "price_eur_kg": 2.82
+        "leek": {
+          "price_eur_kg": 1.89,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "artichoke": {
+          "price_eur_kg": 2.3,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "cauliflower": {
+          "price_eur_kg": 1.27,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "asparagus-green": {
+          "price_eur_kg": 1.68,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "strawberry": {
+          "price_eur_kg": 2.51,
+          "stock_kg": 500,
+          "moq_kg": 5
+        },
+        "melon-piel-de-sapo": {
+          "price_eur_kg": 1.07,
+          "stock_kg": 500,
+          "moq_kg": 5
         }
       }
     },
@@ -141,15 +341,55 @@
       "color": "hsl(160 34% 39%)",
       "synthetic": true,
       "inventory": {
-        "potato": {
-          "stock_kg": 380,
-          "moq_kg": 30,
-          "price_eur_kg": 0.76
+        "onion-yellow": {
+          "price_eur_kg": 1.53,
+          "stock_kg": 300,
+          "moq_kg": 10
         },
-        "carrot": {
-          "stock_kg": 260,
-          "moq_kg": 15,
-          "price_eur_kg": 0.94
+        "garlic": {
+          "price_eur_kg": 1.95,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "pepper-red": {
+          "price_eur_kg": 0.89,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "lettuce-romaine": {
+          "price_eur_kg": 1.32,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "green-bean": {
+          "price_eur_kg": 2.16,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "cabbage": {
+          "price_eur_kg": 2.59,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "mushroom": {
+          "price_eur_kg": 1.53,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "asparagus-white": {
+          "price_eur_kg": 1.95,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "watermelon": {
+          "price_eur_kg": 0.89,
+          "stock_kg": 300,
+          "moq_kg": 10
+        },
+        "orange": {
+          "price_eur_kg": 1.32,
+          "stock_kg": 300,
+          "moq_kg": 10
         }
       }
     }

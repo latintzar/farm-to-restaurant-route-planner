@@ -1,118 +1,562 @@
 {
-  "_note": "Authored 2026-10-28 by Peter Neyra’s release preparation. Fictional businesses and commercial assumptions, independently created for this example. Coordinates are manually chosen illustrative Barcelona-area test points. MIT; see data/README.md. Map and road-service responses retain their own terms.",
+  "_note": "Original nine basket designs with fictional customers, illustrative commercial inputs and a separately authored six-farm catalogue. Coordinates are Barcelona-area example points. MIT; road/map data retain their licences. Historical producer directory is privately preserved. Prices are editable demonstration assumptions, not market quotes.",
   "products": [
     {
-      "id": "tomato",
-      "label": "Tomato",
-      "label_es": "Tomate",
-      "icon": "🍅",
-      "category": "vegetable",
+      "id": "tomato-round",
+      "label": "Tomato (round)",
+      "label_es": "Tomate maduro",
       "synonyms": [
+        "tomate",
         "tomato",
-        "tomate"
+        "redondo",
+        "maduro"
       ],
-      "reference_price_eur_kg": 2.4,
-      "farm_gate_typical_eur_kg": 1.65,
-      "sale_price_eur_kg": 3.1
+      "category": "vegetable",
+      "season": "May–Oct",
+      "farm_gate_typical_eur_kg": 0.8,
+      "icon": "🍅",
+      "reference_price_eur_kg": 1.16,
+      "sale_price_eur_kg": 1.04,
+      "synthetic": true
+    },
+    {
+      "id": "tomato-pera",
+      "label": "Tomato (Pera)",
+      "label_es": "Tomate pera",
+      "synonyms": [
+        "pera",
+        "plum",
+        "san marzano"
+      ],
+      "category": "vegetable",
+      "season": "May–Oct",
+      "farm_gate_typical_eur_kg": 0.99,
+      "icon": "🍅",
+      "reference_price_eur_kg": 1.44,
+      "sale_price_eur_kg": 1.29,
+      "synthetic": true
     },
     {
       "id": "potato",
-      "label": "Potato",
-      "label_es": "Patata",
-      "icon": "🥔",
-      "category": "vegetable",
+      "label": "Potato (white)",
+      "label_es": "Patata blanca",
       "synonyms": [
+        "patata",
         "potato",
-        "patata"
+        "temprana"
       ],
-      "reference_price_eur_kg": 1.2,
-      "farm_gate_typical_eur_kg": 0.72,
-      "sale_price_eur_kg": 1.55
+      "category": "tuber",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.18,
+      "icon": "🥔",
+      "reference_price_eur_kg": 1.71,
+      "sale_price_eur_kg": 1.53,
+      "synthetic": true
     },
     {
-      "id": "courgette",
-      "label": "Courgette",
-      "label_es": "Calabacín",
-      "icon": "🥒",
-      "category": "vegetable",
+      "id": "onion-yellow",
+      "label": "Onion (yellow)",
+      "label_es": "Cebolla seca",
       "synonyms": [
-        "courgette",
-        "zucchini",
-        "calabacin"
-      ],
-      "reference_price_eur_kg": 1.85,
-      "farm_gate_typical_eur_kg": 1.1,
-      "sale_price_eur_kg": 2.4
-    },
-    {
-      "id": "lettuce",
-      "label": "Lettuce",
-      "label_es": "Lechuga",
-      "icon": "🥬",
-      "category": "vegetable",
-      "synonyms": [
-        "lettuce",
-        "lechuga"
-      ],
-      "reference_price_eur_kg": 2.05,
-      "farm_gate_typical_eur_kg": 1.25,
-      "sale_price_eur_kg": 2.7
-    },
-    {
-      "id": "onion",
-      "label": "Onion",
-      "label_es": "Cebolla",
-      "icon": "🧅",
-      "category": "vegetable",
-      "synonyms": [
+        "cebolla",
         "onion",
-        "cebolla"
+        "amarilla"
       ],
-      "reference_price_eur_kg": 1.35,
-      "farm_gate_typical_eur_kg": 0.8,
-      "sale_price_eur_kg": 1.75
+      "category": "allium",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.37,
+      "icon": "🧅",
+      "reference_price_eur_kg": 1.99,
+      "sale_price_eur_kg": 1.78,
+      "synthetic": true
+    },
+    {
+      "id": "onion-figueras",
+      "label": "Onion (Figueras sweet)",
+      "label_es": "Cebolla Figueras",
+      "synonyms": [
+        "dolça",
+        "empordà",
+        "sweet onion",
+        "figueras"
+      ],
+      "category": "allium",
+      "season": "May–Aug",
+      "farm_gate_typical_eur_kg": 1.56,
+      "icon": "🧅",
+      "reference_price_eur_kg": 2.26,
+      "sale_price_eur_kg": 2.03,
+      "synthetic": true
+    },
+    {
+      "id": "garlic",
+      "label": "Garlic (dry bulb)",
+      "label_es": "Ajo seco",
+      "synonyms": [
+        "ajo",
+        "garlic",
+        "blanco",
+        "morado"
+      ],
+      "category": "allium",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.75,
+      "icon": "🧄",
+      "reference_price_eur_kg": 2.54,
+      "sale_price_eur_kg": 2.27,
+      "synthetic": true
     },
     {
       "id": "carrot",
       "label": "Carrot",
       "label_es": "Zanahoria",
-      "icon": "🥕",
-      "category": "vegetable",
       "synonyms": [
-        "carrot",
-        "zanahoria"
+        "zanahoria",
+        "carrot"
       ],
-      "reference_price_eur_kg": 1.45,
-      "farm_gate_typical_eur_kg": 0.9,
-      "sale_price_eur_kg": 1.9
+      "category": "root",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.94,
+      "icon": "🥕",
+      "reference_price_eur_kg": 2.81,
+      "sale_price_eur_kg": 2.52,
+      "synthetic": true
+    },
+    {
+      "id": "courgette",
+      "label": "Courgette",
+      "label_es": "Calabacín",
+      "synonyms": [
+        "calabacin",
+        "zucchini",
+        "courgette"
+      ],
+      "category": "vegetable",
+      "season": "Apr–Oct",
+      "farm_gate_typical_eur_kg": 2.13,
+      "icon": "🥒",
+      "reference_price_eur_kg": 3.09,
+      "sale_price_eur_kg": 2.77,
+      "synthetic": true
+    },
+    {
+      "id": "aubergine",
+      "label": "Aubergine",
+      "label_es": "Berenjena",
+      "synonyms": [
+        "berenjena",
+        "eggplant",
+        "aubergine",
+        "larga"
+      ],
+      "category": "vegetable",
+      "season": "May–Oct",
+      "farm_gate_typical_eur_kg": 2.32,
+      "icon": "🍆",
+      "reference_price_eur_kg": 3.36,
+      "sale_price_eur_kg": 3.02,
+      "synthetic": true
+    },
+    {
+      "id": "pepper-red",
+      "label": "Bell pepper (red)",
+      "label_es": "Pimiento rojo",
+      "synonyms": [
+        "pimiento",
+        "pepper",
+        "rojo",
+        "red"
+      ],
+      "category": "vegetable",
+      "season": "May–Oct",
+      "farm_gate_typical_eur_kg": 0.8,
+      "icon": "🫑",
+      "reference_price_eur_kg": 1.16,
+      "sale_price_eur_kg": 1.04,
+      "synthetic": true
     },
     {
       "id": "cucumber",
       "label": "Cucumber",
       "label_es": "Pepino",
-      "icon": "🥒",
-      "category": "vegetable",
       "synonyms": [
-        "cucumber",
-        "pepino"
+        "pepino",
+        "cucumber"
       ],
-      "reference_price_eur_kg": 1.75,
-      "farm_gate_typical_eur_kg": 1.05,
-      "sale_price_eur_kg": 2.25
+      "category": "vegetable",
+      "season": "Apr–Oct",
+      "farm_gate_typical_eur_kg": 0.99,
+      "icon": "🥒",
+      "reference_price_eur_kg": 1.44,
+      "sale_price_eur_kg": 1.29,
+      "synthetic": true
+    },
+    {
+      "id": "lettuce-romaine",
+      "label": "Lettuce (romaine)",
+      "label_es": "Lechuga romana",
+      "synonyms": [
+        "lechuga",
+        "cogollo",
+        "romana",
+        "romaine"
+      ],
+      "category": "leaf",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.18,
+      "icon": "🥬",
+      "reference_price_eur_kg": 1.71,
+      "sale_price_eur_kg": 1.53,
+      "synthetic": true
+    },
+    {
+      "id": "spinach",
+      "label": "Spinach",
+      "label_es": "Espinaca",
+      "synonyms": [
+        "espinaca",
+        "spinach"
+      ],
+      "category": "leaf",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.37,
+      "icon": "🥬",
+      "reference_price_eur_kg": 1.99,
+      "sale_price_eur_kg": 1.78,
+      "synthetic": true
+    },
+    {
+      "id": "chard",
+      "label": "Chard",
+      "label_es": "Acelgas",
+      "synonyms": [
+        "acelga",
+        "chard",
+        "silverbeet"
+      ],
+      "category": "leaf",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.56,
+      "icon": "🥬",
+      "reference_price_eur_kg": 2.26,
+      "sale_price_eur_kg": 2.03,
+      "synthetic": true
+    },
+    {
+      "id": "leek",
+      "label": "Leek",
+      "label_es": "Puerros",
+      "synonyms": [
+        "puerro",
+        "leek"
+      ],
+      "category": "allium",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.75,
+      "icon": "🌱",
+      "reference_price_eur_kg": 2.54,
+      "sale_price_eur_kg": 2.27,
+      "synthetic": true
     },
     {
       "id": "green-bean",
       "label": "Green bean",
-      "label_es": "Judía verde",
-      "icon": "🫛",
-      "category": "vegetable",
+      "label_es": "Judía verde fina",
       "synonyms": [
+        "judia",
+        "judía",
         "green bean",
-        "judia"
+        "fina",
+        "perona"
       ],
-      "reference_price_eur_kg": 4.2,
-      "farm_gate_typical_eur_kg": 2.7,
-      "sale_price_eur_kg": 5.3
+      "category": "vegetable",
+      "season": "May–Sep",
+      "farm_gate_typical_eur_kg": 1.94,
+      "icon": "🫛",
+      "reference_price_eur_kg": 2.81,
+      "sale_price_eur_kg": 2.52,
+      "synthetic": true
+    },
+    {
+      "id": "artichoke",
+      "label": "Artichoke",
+      "label_es": "Alcachofa",
+      "synonyms": [
+        "alcachofa",
+        "artichoke",
+        "carxofa"
+      ],
+      "category": "vegetable",
+      "season": "Nov–May",
+      "farm_gate_typical_eur_kg": 2.13,
+      "icon": "🌿",
+      "reference_price_eur_kg": 3.09,
+      "sale_price_eur_kg": 2.77,
+      "synthetic": true
+    },
+    {
+      "id": "cabbage",
+      "label": "Cabbage",
+      "label_es": "Col repollo",
+      "synonyms": [
+        "col",
+        "cabbage",
+        "repollo"
+      ],
+      "category": "vegetable",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 2.32,
+      "icon": "🥬",
+      "reference_price_eur_kg": 3.36,
+      "sale_price_eur_kg": 3.02,
+      "synthetic": true
+    },
+    {
+      "id": "pumpkin",
+      "label": "Pumpkin",
+      "label_es": "Calabaza",
+      "synonyms": [
+        "calabaza",
+        "pumpkin",
+        "squash"
+      ],
+      "category": "vegetable",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 0.8,
+      "icon": "🎃",
+      "reference_price_eur_kg": 1.16,
+      "sale_price_eur_kg": 1.04,
+      "synthetic": true
+    },
+    {
+      "id": "broccoli",
+      "label": "Broccoli",
+      "label_es": "Bróculi",
+      "synonyms": [
+        "brecol",
+        "brécol",
+        "broccoli",
+        "bróculi"
+      ],
+      "category": "vegetable",
+      "season": "Oct–May",
+      "farm_gate_typical_eur_kg": 0.99,
+      "icon": "🥦",
+      "reference_price_eur_kg": 1.44,
+      "sale_price_eur_kg": 1.29,
+      "synthetic": true
+    },
+    {
+      "id": "cauliflower",
+      "label": "Cauliflower",
+      "label_es": "Coliflor",
+      "synonyms": [
+        "coliflor",
+        "cauliflower"
+      ],
+      "category": "vegetable",
+      "season": "Oct–May",
+      "farm_gate_typical_eur_kg": 1.18,
+      "icon": "🥦",
+      "reference_price_eur_kg": 1.71,
+      "sale_price_eur_kg": 1.53,
+      "synthetic": true
+    },
+    {
+      "id": "mushroom",
+      "label": "Mushroom (champignon)",
+      "label_es": "Champiñón",
+      "synonyms": [
+        "champinon",
+        "champiñón",
+        "mushroom",
+        "seta"
+      ],
+      "category": "fungus",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.37,
+      "icon": "🍄",
+      "reference_price_eur_kg": 1.99,
+      "sale_price_eur_kg": 1.78,
+      "synthetic": true
+    },
+    {
+      "id": "asparagus-green",
+      "label": "Asparagus (green)",
+      "label_es": "Espárragos verdes",
+      "synonyms": [
+        "esparrago",
+        "espárrago",
+        "asparagus",
+        "verde"
+      ],
+      "category": "vegetable",
+      "season": "Apr–Jun",
+      "farm_gate_typical_eur_kg": 1.56,
+      "icon": "🌿",
+      "reference_price_eur_kg": 2.26,
+      "sale_price_eur_kg": 2.03,
+      "synthetic": true
+    },
+    {
+      "id": "asparagus-white",
+      "label": "Asparagus (white DOP)",
+      "label_es": "Espárragos blancos",
+      "synonyms": [
+        "esparrago blanco",
+        "navarra",
+        "white asparagus"
+      ],
+      "category": "vegetable",
+      "season": "Apr–Jun",
+      "farm_gate_typical_eur_kg": 1.75,
+      "icon": "🌿",
+      "reference_price_eur_kg": 2.54,
+      "sale_price_eur_kg": 2.27,
+      "synthetic": true
+    },
+    {
+      "id": "peach",
+      "label": "Peach (yellow)",
+      "label_es": "Melocotón amarillo",
+      "synonyms": [
+        "melocoton",
+        "melocotón",
+        "peach",
+        "paraguayo"
+      ],
+      "category": "stone-fruit",
+      "season": "May–Sep",
+      "farm_gate_typical_eur_kg": 1.94,
+      "icon": "🍑",
+      "reference_price_eur_kg": 2.81,
+      "sale_price_eur_kg": 2.52,
+      "synthetic": true
+    },
+    {
+      "id": "apricot",
+      "label": "Apricot",
+      "label_es": "Albaricoque",
+      "synonyms": [
+        "albaricoque",
+        "apricot",
+        "albercoc"
+      ],
+      "category": "stone-fruit",
+      "season": "May–Jul",
+      "farm_gate_typical_eur_kg": 2.13,
+      "icon": "🍑",
+      "reference_price_eur_kg": 3.09,
+      "sale_price_eur_kg": 2.77,
+      "synthetic": true
+    },
+    {
+      "id": "strawberry",
+      "label": "Strawberry",
+      "label_es": "Fresón",
+      "synonyms": [
+        "fresa",
+        "strawberry",
+        "fresón",
+        "palamós"
+      ],
+      "category": "berry",
+      "season": "Mar–Jun",
+      "farm_gate_typical_eur_kg": 2.32,
+      "icon": "🍓",
+      "reference_price_eur_kg": 3.36,
+      "sale_price_eur_kg": 3.02,
+      "synthetic": true
+    },
+    {
+      "id": "watermelon",
+      "label": "Watermelon",
+      "label_es": "Sandía sin semilla",
+      "synonyms": [
+        "sandia",
+        "sandía",
+        "watermelon"
+      ],
+      "category": "melon",
+      "season": "May–Sep",
+      "farm_gate_typical_eur_kg": 0.8,
+      "icon": "🍉",
+      "reference_price_eur_kg": 1.16,
+      "sale_price_eur_kg": 1.04,
+      "synthetic": true
+    },
+    {
+      "id": "melon-piel-de-sapo",
+      "label": "Melon (Piel de Sapo)",
+      "label_es": "Melón Piel de Sapo",
+      "synonyms": [
+        "melon",
+        "melón",
+        "piel de sapo",
+        "cantaloupe"
+      ],
+      "category": "melon",
+      "season": "May–Oct",
+      "farm_gate_typical_eur_kg": 0.99,
+      "icon": "🍈",
+      "reference_price_eur_kg": 1.44,
+      "sale_price_eur_kg": 1.29,
+      "synthetic": true
+    },
+    {
+      "id": "orange",
+      "label": "Orange (Valencia)",
+      "label_es": "Naranja Valencia",
+      "synonyms": [
+        "naranja",
+        "orange",
+        "valencia"
+      ],
+      "category": "citrus",
+      "season": "Dec–May",
+      "farm_gate_typical_eur_kg": 1.18,
+      "icon": "🍊",
+      "reference_price_eur_kg": 1.71,
+      "sale_price_eur_kg": 1.53,
+      "synthetic": true
+    },
+    {
+      "id": "lemon",
+      "label": "Lemon (Verna)",
+      "label_es": "Limón Verna",
+      "synonyms": [
+        "limon",
+        "limón",
+        "lemon",
+        "verna",
+        "primofiori"
+      ],
+      "category": "citrus",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.37,
+      "icon": "🍋",
+      "reference_price_eur_kg": 1.99,
+      "sale_price_eur_kg": 1.78,
+      "synthetic": true
+    },
+    {
+      "id": "apple",
+      "label": "Apple (cold-stored)",
+      "label_es": "Manzana",
+      "synonyms": [
+        "manzana",
+        "apple",
+        "gala",
+        "fuji",
+        "golden"
+      ],
+      "category": "pome-fruit",
+      "season": "year-round",
+      "farm_gate_typical_eur_kg": 1.56,
+      "icon": "🍎",
+      "reference_price_eur_kg": 2.26,
+      "sale_price_eur_kg": 2.03,
+      "synthetic": true
     }
   ]
 }
