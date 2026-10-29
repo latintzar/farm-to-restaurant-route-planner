@@ -4,7 +4,7 @@ Farm-to-restaurant route planner is a VROOM-based planning tool for decentralise
 
 [Website](https://atelierneyra.com/route-planner) · [Open preview](https://preview.atelierneyra.com/?project=route-planner) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
 
-![Barcelona road route and calculated costs](docs/assets/route-planner-embedded.png)
+![Farm-to-restaurant planner showing the six-restaurant route and VROOM-verified costs](docs/assets/readme-hero.png)
 
 ## Customer discovery
 
