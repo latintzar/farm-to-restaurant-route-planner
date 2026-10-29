@@ -2,7 +2,7 @@
 
 Farm-to-restaurant route planner is a VROOM-based planning tool for decentralised farm-to-table logistics. Choose a basket or build an order, compare farm sourcing, and calculate pickup and delivery routes, vehicle capacity and costs on real roads.
 
-[Website](https://atelierneyra.com/route-planner) · [Open preview](https://preview.atelierneyra.com/?project=route-planner) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
+[Website](https://atelierneyra.com/route-planner) · [Open app](https://preview.atelierneyra.com/?project=route-planner) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
 
 ![Farm-to-restaurant planner showing the six-restaurant route and VROOM-verified costs](docs/assets/readme-hero.png)
 
