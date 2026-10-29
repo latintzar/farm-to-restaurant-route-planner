@@ -1819,3 +1819,6 @@ select.ip{cursor:pointer;background:var(--paper)}
   .ol-rev{grid-column:1;font-size:10px}
   .ol-rm{grid-column:3;grid-row:1 / span 2}
 }
+@media(max-width:880px){
+  .map-toast{position:fixed;left:12px;right:12px;bottom:12px;max-width:none;z-index:1100}
+}
