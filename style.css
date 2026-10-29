@@ -1792,3 +1792,30 @@ select.ip{cursor:pointer;background:var(--paper)}
 .lines-head { justify-content: flex-end; }
 .logo { text-transform: none; }
 @media (max-width: 720px) { .nav { padding: 0 12px; gap: 12px; } .logo { font-size: 18px; line-height: 1.12; min-width: 0; } .nav-cta { flex-shrink: 0; } }
+
+
+/* Phone: put the editable basket and its calculation before the map. */
+.ol-qty{display:flex;align-items:center;gap:3px}
+.ol-qty-input{width:56px;min-height:36px;border:1px solid var(--rule-strong);background:#fff;color:var(--ink);font:inherit;text-align:right;padding:4px}
+.ol-qty span{font-size:10px;color:var(--ink-mid)}
+@media(max-width:880px){
+  .col-right{grid-row:1}
+  .col-map{grid-row:2;height:45vh;min-height:300px}
+  .col-left{grid-row:3}
+  .col-right .order-lines-scroll{max-height:240px}
+  .card-runcost .rc-slot{order:-1}
+  .basket-head{align-items:center;flex-wrap:wrap}
+  .bh-btn,.btn-tiny,.svt-btn{min-height:44px}
+  .basket-head-actions{margin:0}
+  .ol-rm{min-width:44px;min-height:44px}
+  .modal-bg{padding:12px}
+  .modal{max-height:calc(100dvh - 24px);padding:14px}
+  .modal-head .btn-tiny{min-width:44px;font-size:20px}
+  .form-row .ip{font-size:16px;min-height:44px}
+  .nav-cta{min-width:44px;min-height:44px;justify-content:center}
+}
+@media(max-width:360px){
+  .order-line{grid-template-columns:minmax(0,1fr) auto auto;gap:5px;padding:6px}
+  .ol-rev{grid-column:1;font-size:10px}
+  .ol-rm{grid-column:3;grid-row:1 / span 2}
+}

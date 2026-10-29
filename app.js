@@ -442,11 +442,26 @@ function renderOrderLines(){
         <span class="ol-rest">${escapeHtml(r.name)}</span>
         <span class="ol-prod">${p.icon||''} ${escapeHtml(p.label)}</span>
       </div>
-      <span class="ol-qty">${line.qty_kg}<small style="color:var(--ink-mid);font-weight:600;font-size:9.5px;letter-spacing:.05em;margin-left:2px">kg</small></span>
+      <label class="ol-qty"><input class="ol-qty-input" type="number" min="1" step="1" value="${line.qty_kg}" data-idx="${idx}" aria-label="Quantity in kilograms for ${escapeHtml(p.label)} at ${escapeHtml(r.name)}"><span>kg</span></label>
       <span class="ol-rev" title="modeled sale price €${(p.sale_price_eur_kg||0).toFixed(2)}/kg">€${lineRevenue.toFixed(2)}</span>
       <button class="ol-rm" data-idx="${idx}" title="remove">×</button>
     `;
     el.appendChild(row);
+  });
+  el.querySelectorAll('.ol-qty-input').forEach(input => {
+    input.addEventListener('change', () => {
+      const i = Number(input.dataset.idx);
+      const qty = Number(input.value);
+      if (editsLocked() || !Number.isInteger(qty) || qty < 1) {
+        input.value = STATE.orderLines[i].qty_kg;
+        return;
+      }
+      invalidateDecision();
+      STATE.activeScenarioId = null;
+      STATE.orderLines[i].qty_kg = qty;
+      renderOrderLines();
+      drawMap();
+    });
   });
   el.querySelectorAll('.ol-rm').forEach(btn => {
     btn.addEventListener('click', () => {
