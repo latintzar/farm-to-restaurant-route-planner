@@ -2,13 +2,27 @@
 
 Farm-to-restaurant route planner is a VROOM-based planning tool for decentralised farm-to-table logistics. Choose a basket or build an order, compare farm sourcing, and calculate pickup and delivery routes, vehicle capacity and costs on real roads.
 
-[Website](https://atelierneyra.com/route-planner) · [Open app](https://preview.atelierneyra.com/?project=route-planner) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
+[Website](https://atelierneyra.com/route-planner) · [Open app](https://atelierneyra.com/preview/route-planner/) · [Documentation](https://docs.atelierneyra.com/route-planner/overview/)
 
 ![Farm-to-restaurant planner showing the six-restaurant route and VROOM-verified costs](docs/assets/readme-hero.png)
 
 ## Customer discovery
 
 The design grew from conversations with 20 farms and 20 shops around Barcelona. Farms said they could not deliver below their minimum order quantities; shops said they could not afford those quantities. The planner tests whether pooled orders and shared pickups can make a delivery workable. The source separates product prices, van costs, driver time and delivery capacity so those assumptions can be changed.
+
+## How it works
+
+Twenty farms around Barcelona said they could not deliver below their minimum order quantities. Twenty shops said they could not afford those quantities. Pooling orders creates a routing and sourcing problem: which farms, which stops and what delivery cost?
+
+| Feature | What it does |
+| --- | --- |
+| Nine basket presets | Explore the original small-order, larger-basket, clustered-stop and dispersed-stop scenarios, or build your own. |
+| Farm sourcing | Compare the products and quantities available across farms. |
+| Real road routes | Use VROOM and a regional OSRM network to calculate Barcelona street routes. |
+| Delivery economics | Read goods, van, driver, distance and time together. |
+| Mobile order editing | Edit quantities and calculate above the map, with touch-sized controls and visible capacity feedback. |
+
+The native hosted app calculates routes with the same planner, VROOM service and local Barcelona OSRM network supplied by the source. Farm names, customers, prices and stock in the public example are illustrative. Connect your own stock, customers, delivery costs and regional road data. [Product guide](docs/PROJECT.md).
 
 ## Run locally
 
