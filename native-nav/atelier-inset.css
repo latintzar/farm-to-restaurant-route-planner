@@ -1,0 +1,3 @@
+.nav { top: 56px; }
+.stage { top: calc(56px + var(--ticker-h) + var(--nav-h)); }
+@media(max-width:880px){.stage{padding-top:calc(56px + var(--ticker-h) + var(--nav-h) + var(--gutter));}}
