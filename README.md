@@ -59,18 +59,23 @@ This is a bounded heuristic search. Exhaustive sourcing enumeration still uses h
 
 ## Example baskets and assumptions
 
-| Scenario ID | Purpose |
-|---|---|
-| `small-basket` | One restaurant, two products, 50 kg |
-| `barcelona-multi-stop` | Three restaurants, four products, 250 kg |
-| `city-wide` | Five restaurants, eight products, 400 kg |
-| `split-stock` | 140 kg tomato demand requires two farms |
-| `capacity-boundary` | 650 kg, exactly the pickup-first capacity |
-| `split-runs` | 651 kg, identified as requiring split runs |
+| Scenario ID | Chefs | Products | Weight | Drop locations |
+|---|---:|---:|---:|---|
+| `1r-1i-tiny` | 1 | 1 | 25 kg | Single drop |
+| `1r-3i-mid` | 1 | 3 | 105 kg | Single drop |
+| `1r-1i-big` | 1 | 1 | 350 kg | Single drop |
+| `2r-cluster` | 2 | 3 | 100 kg | Clustered |
+| `3r-cluster` | 3 | 4 | 250 kg | Clustered |
+| `3r-spread` | 4 | 4 | 250 kg | Dispersed |
+| `6r-cluster` | 7 | 9 | 600 kg | Clustered |
+| `6r-spread` | 6 | 8 | 600 kg | Dispersed |
+| `11r-fulltruck` | 12 | 17 | 1,257 kg | Mixed |
+
+[data/scenarios.json](data/scenarios.json) owns these nine presets. Counts and weights come from their order lines; `11r-fulltruck` exceeds the example van’s 1,200 kg capacity.
 
 The browser collects all pickups before delivering. The full basket must fit in the vehicle at once. Interleaved pickups/deliveries, multiple vehicles, time windows and cold-chain constraints are outside this search model.
 
-The fictional vehicle assumptions are 650 kg capacity, €0.18/km fuel, €12/hour van rental capped at €72/day, and €24/hour driver time. Each hourly charge rounds `drive hours × 1.35` up to whole hours. [data/depot.json](data/depot.json) owns those editable assumptions. The values were authored on 28 October 2026 as examples; service responses supply travel data rather than commercial quotations.
+The fictional vehicle assumptions are 1,200 kg capacity, €0.18/km fuel, €12/hour van rental capped at €72/day, and €24/hour driver time. Each hourly charge rounds `drive hours × 1.35` up to whole hours. [data/depot.json](data/depot.json) owns those editable assumptions. The values were authored on 28 October 2026 as examples; service responses supply travel data rather than commercial quotations.
 
 The Modeling report estimates route shape for scenario comparison. Calculate produces the road-backed proposal and explicit route-check status. Gross profit deducts goods and run costs; add other business overhead to assess net earnings. Optional channel comparisons use illustrative 1.30 delivered-price and 0.79 farm-gate multipliers against the authored reference prices.
 
