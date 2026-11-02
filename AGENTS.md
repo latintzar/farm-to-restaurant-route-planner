@@ -9,3 +9,5 @@ Keep the boundaries visible: authored commercial inputs are fictional and MIT; r
 Run `npm test` and `npm run check` for logic changes. `python3 tests/browser_demo.py` uses Playwright Chromium to exercise the actual recorded example at desktop/phone sizes, inspect costs and enforce zero live routing requests. `python3 tools/build-demo.py` regenerates demo.html after index.html changes.
 
 The private historical producer catalogue and original Git history stay outside this repository. Replace the sample data with inputs you are entitled to use. Shared service credentials belong in a server proxy; avoid adding them to browser source, fixtures or chat.
+
+For responsive UI changes, also run `python3 tests/browser_mobile.py`. It uses a synthetic startup matrix and fences routing network traffic. The opt-in owned-service mode in [docs/MOBILE-UX.md](docs/MOBILE-UX.md) proves one actual road-backed calculation. Keep native-navigation bundles under their shared owner.

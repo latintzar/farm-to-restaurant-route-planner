@@ -1,6 +1,6 @@
 # Routing architecture
 
-The frontend is a static application. All mutable basket/stock/decision state lives in the browser; the shipped JSON supplies an illustrative starting world. The original interface remains: source catalogue left, map centre, order basket and economics right.
+The frontend is a static application. All mutable basket/stock/decision state lives in the browser; the shipped JSON supplies an illustrative starting world. Desktop keeps the source catalogue left, map centre, and order basket/economics right. Phones use the same components and state with a full-viewport map, overlaid controls and native fullscreen panels; [mobile interaction decisions](MOBILE-UX.md) record the layout and checks.
 
 ```text
 JSON catalogues + entered orders/stock

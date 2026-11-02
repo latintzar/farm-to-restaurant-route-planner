@@ -22,7 +22,7 @@ Twenty farms around Barcelona said they could not deliver below their minimum or
 | Farm sourcing | Compare the products and quantities available across farms. |
 | Real road routes | Use VROOM and a regional OSRM network to calculate Barcelona street routes. |
 | Delivery economics | Read goods, van, driver, distance and time together. |
-| Mobile order editing | Edit quantities and calculate above the map, with touch-sized controls and visible capacity feedback. |
+| Mobile route planning | Keep the map in view, open full-screen Orders/Supply panels, and use a fixed Calculate/results bar with touch-sized controls. |
 
 The native hosted app calculates routes with the same planner, VROOM service and local Barcelona OSRM network supplied by the source. Farm names, customers, prices and stock in the public example are illustrative. Connect your own stock, customers, delivery costs and regional road data. [Product guide](docs/PROJECT.md).
 

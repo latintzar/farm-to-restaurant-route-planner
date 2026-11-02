@@ -54,6 +54,8 @@ const STATE = {
   solvePhase: null,
 };
 
+let mobileUi = null;
+
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
@@ -89,6 +91,7 @@ async function boot(){
   renderOrderLines();   // also calls renderOrderTotal()
   renderRunCostSkeleton();
   bindEvents();
+  initResponsiveUi();
   pingSolver();
   primeOsrm();   // pre-fetch the full road matrix so Calculate is instant
 }
@@ -221,11 +224,17 @@ function renderScenarios(){
 
 function openModal(id){
   const m = document.getElementById(id);
-  if (m) m.classList.remove('hidden');
+  if (m && !m.open) {
+    m.classList.remove('hidden');
+    m.showModal();
+  }
 }
 function closeModal(id){
   const m = document.getElementById(id);
-  if (m) m.classList.add('hidden');
+  if (m) {
+    if (m.open) m.close();
+    m.classList.add('hidden');
+  }
 }
 
 function renderRestaurantSelect(){
@@ -612,6 +621,7 @@ function computeMercabarnaChefCost(orderLines){
  *  Both update on every basket mutation, BEFORE Calculate.
  */
 function renderOrderTotal(){
+  syncMobileSummary();
   const el = $('#cs-revenue');
   const compEl = $('#cs-vs-mercabarna');
   if (!el) return;
@@ -721,6 +731,7 @@ function setCalcState(state, opts = {}){
   const slot = $('#rc-slot');
   const clearBtn = $('#rc-clear');
   if (!slot) return;
+  slot.dataset.state = state;
   if (state === 'idle') {
     slot.innerHTML = `
       <button id="calculate" class="calc-btn calc-btn-inline" type="button">
@@ -749,7 +760,8 @@ function setCalcState(state, opts = {}){
     const sign = grossProfit >= 0 ? '+' : '−';
     const bad = grossProfit < 0;
     slot.innerHTML = `
-      <button class="calc-result ${bad ? 'bad' : ''}" id="calculate" type="button" title="Click to recalculate">
+      <button class="calc-result ${bad ? 'bad' : ''}" id="calculate" type="button" title="Recalculate route" aria-label="Recalculate route">
+        <span class="mobile-recalculate">Recalculate</span>
         <span class="cr-label">Gross profit</span>
         <span class="cr-num">${sign}€${Math.abs(grossProfit).toFixed(0)}</span>
         <span class="cr-pct">${marginPct.toFixed(0)}% of revenue</span>
@@ -758,6 +770,7 @@ function setCalcState(state, opts = {}){
     if (clearBtn) clearBtn.classList.remove('hidden');
     setGoogleMapsCta(STATE.lastDecision);
   }
+  syncMobileSummary();
 }
 
 /**
@@ -1197,11 +1210,9 @@ function bindEvents(){
 
   // close modals on backdrop click
   document.querySelectorAll('.modal-bg').forEach(bg => {
-    bg.addEventListener('click', (e) => { if (e.target === bg) bg.classList.add('hidden'); });
+    bg.addEventListener('click', (e) => { if (e.target === bg) closeModal(bg.id); });
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') document.querySelectorAll('.modal-bg').forEach(m => m.classList.add('hidden'));
-  });
+  // Native dialog cancel closes only the foremost modal on Escape.
 
   // add-stock modal
   $('#farms-add').addEventListener('click', () => openAddStockModalFor());
@@ -1227,7 +1238,7 @@ function bindEvents(){
     if (!farm) return;
     invalidateDecision();
     farm.inventory[productId] = { stock_kg: qty, price_eur_kg: price, moq_kg: moq };
-    $('#add-stock-modal').classList.add('hidden');
+    closeModal('add-stock-modal');
     renderFarmCards();
     drawMap();
   });
@@ -1341,6 +1352,7 @@ function commitDecision(decision, revision){
 }
 
 async function runDecision(){
+  if (mobileUi?.panel.open) closeMobilePanel();
   if (STATE.solvePhase) return;
   if (STATE.orderLines.length === 0) {
     showToast('Add at least one order line first.', 'error');
@@ -1705,7 +1717,7 @@ function fitMapToAllLocations(){
     ...STATE.restaurants.map(r => [r.lat, r.lng]),
   ];
   // Settle the overview before a fast cached solve can fit its result.
-  if (pts.length > 0) MAP.fitBounds(L.latLngBounds(pts).pad(0.10), { animate: false });
+  if (pts.length > 0) MAP.fitBounds(L.latLngBounds(pts).pad(0.10), { animate: false, ...mapOverlayPadding() });
 }
 
 /**
@@ -2887,7 +2899,7 @@ function layoutRouteLabels(){
   const container = MAP.getContainer();
   const bounds = container.getBoundingClientRect();
   const viewport = { width: container.clientWidth, height: container.clientHeight };
-  const obstacles = [...container.querySelectorAll('.leaflet-control, #map-gmaps')]
+  const obstacles = [...document.querySelectorAll('#map .leaflet-control, #map-gmaps, #mobile-map-tools, #mobile-routebar')]
     .map(el => el.getBoundingClientRect()).filter(r => r.width && r.height)
     .map(r => ({ left: r.left - bounds.left, top: r.top - bounds.top, width: r.width, height: r.height }));
   const measured = [];
@@ -2923,8 +2935,108 @@ function fitChosenRoute(){
   const geometry = decision.routeGeometry || decision.route.map(stop => [stop.lat, stop.lng]);
   if (geometry.length < 2) return;
   MAP.stop();
-  MAP.fitBounds(L.latLngBounds(geometry).pad(0.12), { animate: false });
+  MAP.fitBounds(L.latLngBounds(geometry).pad(0.12), { animate: false, ...mapOverlayPadding() });
   scheduleRouteLabelLayout();
+}
+
+function mapOverlayPadding(){
+  if (!mobileUi?.media.matches) return {};
+  return { paddingTopLeft: [16, 68], paddingBottomRight: [16, mobileUi.footer.offsetHeight + 36] };
+}
+
+/** Reparent native controls on phones; there is one basket and one solver UI. */
+function initResponsiveUi(){
+  const panel = $('#mobile-panel');
+  if (!panel || typeof matchMedia !== 'function') return;
+  const media = matchMedia('(max-width: 880px)');
+  const nodes = [$('#rc-slot'), $('#open-scenarios'), $('#open-report'), $('.col-left'), $('.col-right')];
+  const homes = new Map(nodes.map(node => {
+    const anchor = document.createComment('route control home');
+    node.before(anchor);
+    return [node, anchor];
+  }));
+  mobileUi = { media, panel, homes, footer: $('#mobile-routebar'), opener: null };
+  const restore = node => homes.get(node).after(node);
+  const restorePanel = () => {
+    restore($('.col-left')); restore($('.col-right')); restore($('#open-report'));
+    document.body.append(mobileUi.footer);
+    if (mobileUi.opener?.isConnected) mobileUi.opener.focus();
+    mobileUi.opener = null;
+  };
+  panel.addEventListener('close', restorePanel);
+  $('#mobile-panel-close').addEventListener('click', closeMobilePanel);
+  $('#mobile-orders').addEventListener('click', e => openMobilePanel('orders', e.currentTarget));
+  $('#mobile-supply').addEventListener('click', e => openMobilePanel('supply', e.currentTarget));
+  $('#mobile-summary').addEventListener('click', e => {
+    if (!STATE.orderLines.length) $('#open-scenarios').click();
+    else openMobilePanel('orders', e.currentTarget);
+  });
+  $('#mobile-details').addEventListener('click', () => $('#open-breakdown').click());
+  document.querySelectorAll('.modal-bg').forEach(dialog => {
+    dialog.addEventListener('close', () => dialog.classList.add('hidden'));
+  });
+  const layout = () => {
+    if (!media.matches) {
+      if (panel.open) panel.close();
+      restorePanel();
+      for (const node of nodes) restore(node);
+      const button = $('#calculate');
+      if (button?.dataset.emptyDisabled) { button.disabled = false; delete button.dataset.emptyDisabled; }
+    } else {
+      $('#mobile-presets-slot').append($('#open-scenarios'));
+      $('#mobile-calc-host').append($('#rc-slot'));
+    }
+    syncMobileSummary();
+    if (MAP) requestAnimationFrame(() => {
+      MAP.invalidateSize({ pan: false });
+      if (media.matches && !STATE.lastDecision) fitMapToAllLocations();
+      else fitChosenRoute();
+    });
+  };
+  media.addEventListener('change', layout);
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
+    document.documentElement.style.setProperty('--route-bottom', `${mobileUi.footer.offsetHeight}px`);
+    scheduleRouteLabelLayout();
+  }).observe(mobileUi.footer);
+  layout();
+}
+
+function openMobilePanel(kind, opener){
+  if (!mobileUi?.media.matches) return;
+  const { panel, footer } = mobileUi;
+  if (panel.open) {
+    for (const aside of [$('.col-left'), $('.col-right')]) mobileUi.homes.get(aside).after(aside);
+  }
+  mobileUi.opener = opener;
+  $('#mobile-panel-title').textContent = kind === 'orders' ? 'Orders' : 'Farm supply';
+  $('#mobile-panel-body').append(kind === 'orders' ? $('.col-right') : $('.col-left'));
+  $('#mobile-panel-actions').prepend($('#open-report'));
+  panel.append(footer);
+  panel.dataset.panel = kind;
+  if (!panel.open) panel.showModal();
+}
+
+function closeMobilePanel(){
+  if (mobileUi?.panel.open) mobileUi.panel.close();
+}
+
+function syncMobileSummary(){
+  if (!mobileUi) return;
+  const lines = STATE.orderLines;
+  const kg = lines.reduce((sum, line) => sum + Number(line.qty_kg || 0), 0);
+  const deliveries = new Set(lines.map(line => line.restaurant_id)).size;
+  $('#mobile-order-count').textContent = String(deliveries);
+  $('#mobile-summary-title').textContent = lines.length
+    ? `${Number(kg.toFixed(3))} kg · ${deliveries} ${deliveries === 1 ? 'delivery' : 'deliveries'}` : 'Choose a preset';
+  const decision = STATE.lastDecision;
+  $('#mobile-summary-detail').textContent = decision
+    ? `${(decision.cost.distance_m / 1000).toFixed(1)} km · ${Math.round(decision.cost.duration_s / 60)} min` : '';
+  $('#mobile-details').classList.toggle('hidden', !decision);
+  const button = $('#calculate');
+  if (mobileUi.media.matches && button && !document.body.classList.contains('recorded-example')) {
+    if (!lines.length) { button.disabled = true; button.dataset.emptyDisabled = 'true'; }
+    else if (button.dataset.emptyDisabled) { button.disabled = false; delete button.dataset.emptyDisabled; }
+  }
 }
 
 function initMap(){

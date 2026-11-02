@@ -113,7 +113,7 @@
           <h2 class="section-heading">Orders</h2>
         </div>
         <div class="basket-head-actions">
-          <button class="bh-btn" id="open-scenarios" title="Pick a prepared morning">▣&nbsp;scenarios</button>
+          <button class="bh-btn" id="open-scenarios" title="Pick a prepared morning">Presets</button>
           <button class="bh-btn bh-btn-primary" id="open-add-order" title="Add an order line">+&nbsp;order</button>
         </div>
       </div>
@@ -185,21 +185,20 @@
 <!-- ===========================================================
      MODAL · Scenarios picker
      =========================================================== -->
-<div class="modal-bg hidden" id="scenarios-modal">
+<dialog class="modal-bg hidden" id="scenarios-modal" aria-labelledby="scenarios-title">
   <div class="modal modal-wide">
     <div class="modal-head">
       <div>
-        <span class="kicker">Prepared scenarios</span>
-        <h3 class="modal-title">Pick a morning <em>to run</em></h3>
+        <h3 class="modal-title" id="scenarios-title">Basket presets</h3>
       </div>
-      <button class="btn-tiny" id="scenarios-close">×</button>
+      <button class="btn-tiny" id="scenarios-close" aria-label="Close scenarios">×</button>
     </div>
     <p class="card-sub modal-sub">
       Fictional Barcelona businesses, editable baskets and modeled commercial terms. Calculate uses your configured road service.
     </p>
     <div class="scenario-list" id="scenario-list"></div>
   </div>
-</div>
+</dialog>
 
 <!-- ===========================================================
      MODAL · Modeling report
@@ -209,11 +208,11 @@
      against the same cost model so the table updates if you edit
      scenarios. The bar chart is inline SVG; no chart library.
      =========================================================== -->
-<div class="modal-bg hidden" id="report-modal">
+<dialog class="modal-bg hidden" id="report-modal" aria-labelledby="report-title">
   <div class="modal modal-fullsize">
     <div class="modal-head">
-      <h3 class="modal-title">Basket economics</h3>
-      <button class="btn-tiny" id="report-close">×</button>
+      <h3 class="modal-title" id="report-title">Basket economics</h3>
+      <button class="btn-tiny" id="report-close" aria-label="Close report">×</button>
     </div>
     <div class="report-body">
       <section class="rep-daily-head">
@@ -253,31 +252,30 @@
       </section>
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- ===========================================================
      MODAL · New order (replaces the inline form)
      =========================================================== -->
-<div class="modal-bg hidden" id="add-order-modal">
+<dialog class="modal-bg hidden" id="add-order-modal" aria-labelledby="add-order-title">
   <div class="modal">
     <div class="modal-head">
       <div>
-        <span class="kicker">New order line</span>
-        <h3 class="modal-title">A chef <em>called</em></h3>
+        <h3 class="modal-title" id="add-order-title">New order</h3>
       </div>
-      <button class="btn-tiny" id="add-order-close">×</button>
+      <button class="btn-tiny" id="add-order-close" aria-label="Close add order">×</button>
     </div>
     <div class="form-row">
-      <label>Restaurant</label>
+      <label for="order-restaurant">Restaurant</label>
       <select id="order-restaurant" class="ip"></select>
     </div>
     <div class="form-row form-row-search">
-      <label>Product</label>
+      <label for="order-product-search">Product</label>
       <input type="text" id="order-product-search" class="ip" placeholder="search…" autocomplete="off"/>
       <div class="autocomplete" id="order-product-autocomplete"></div>
     </div>
     <div class="form-row form-row-qty">
-      <label>Quantity</label>
+      <label for="order-qty">Quantity</label>
       <div class="qty-input">
         <input type="number" id="order-qty" class="ip" min="1" step="1" value="50"/>
         <span class="qty-unit">kg</span>
@@ -287,7 +285,7 @@
       <button id="order-add" class="btn-add">+ Add to basket</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- ===========================================================
      MODAL · Full decision breakdown — near-full-viewport explainer.
@@ -295,14 +293,13 @@
      operating decisions. It walks the math step by step, then compares
      this basket against the chef's observable status-quo supply chain.
      =========================================================== -->
-<div class="modal-bg hidden" id="breakdown-modal">
+<dialog class="modal-bg hidden" id="breakdown-modal" aria-labelledby="bd-title">
   <div class="modal modal-fullsize">
     <div class="modal-head">
       <div>
-        <span class="kicker">Decision breakdown</span>
         <h3 class="modal-title" id="bd-title">Last decision</h3>
       </div>
-      <button class="btn-tiny" id="breakdown-close">×</button>
+      <button class="btn-tiny" id="breakdown-close" aria-label="Close breakdown">×</button>
     </div>
 
     <div class="bd-body">
@@ -460,37 +457,37 @@
 
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- ===========================================================
      MODAL · Add / edit stock on a farm
      =========================================================== -->
-<div class="modal-bg hidden" id="add-stock-modal">
+<dialog class="modal-bg hidden" id="add-stock-modal" aria-labelledby="add-stock-title">
   <div class="modal">
     <div class="modal-head">
-      <span class="kicker">Add / edit stock</span>
-      <button class="btn-tiny" id="add-stock-close">×</button>
+      <h3 class="modal-title" id="add-stock-title">Farm stock</h3>
+      <button class="btn-tiny" id="add-stock-close" aria-label="Close add stock">×</button>
     </div>
     <div class="form-row">
-      <label>Farm</label>
+      <label for="add-stock-farm">Farm</label>
       <select id="add-stock-farm" class="ip"></select>
     </div>
     <div class="form-row form-row-search">
-      <label>Product</label>
+      <label for="add-stock-product">Product</label>
       <input type="text" id="add-stock-product" class="ip" placeholder="search…" autocomplete="off"/>
       <div class="autocomplete" id="add-stock-autocomplete"></div>
     </div>
     <div class="modal-grid">
       <div>
-        <label>Stock (kg)</label>
+        <label for="add-stock-qty">Stock (kg)</label>
         <input type="number" id="add-stock-qty" class="ip" min="0" step="5" value="50"/>
       </div>
       <div>
-        <label>Price (€/kg)</label>
+        <label for="add-stock-price">Price (€/kg)</label>
         <input type="number" id="add-stock-price" class="ip" min="0" step="0.05" value="1.40"/>
       </div>
       <div>
-        <label>MOQ (kg)</label>
+        <label for="add-stock-moq">MOQ (kg)</label>
         <input type="number" id="add-stock-moq" class="ip" min="0" step="5" value="10"/>
       </div>
     </div>
@@ -498,7 +495,23 @@
       <button id="add-stock-save" class="btn-add">Save stock</button>
     </div>
   </div>
+</dialog>
+
+<!-- Phone controls reuse the same basket, actions and calculation as desktop. -->
+<div class="mobile-map-tools" id="mobile-map-tools" aria-label="Route controls">
+  <span id="mobile-presets-slot"></span>
+  <button id="mobile-orders" type="button" aria-haspopup="dialog">Orders <span id="mobile-order-count">0</span></button>
+  <button id="mobile-supply" type="button" aria-haspopup="dialog">Supply</button>
 </div>
+<div class="mobile-routebar" id="mobile-routebar">
+  <button id="mobile-summary" class="mobile-summary" type="button"><strong id="mobile-summary-title">Choose a preset</strong><span id="mobile-summary-detail"></span></button>
+  <button id="mobile-details" class="mobile-details hidden" type="button">Details</button>
+  <div id="mobile-calc-host"></div>
+</div>
+<dialog id="mobile-panel" class="mobile-panel" aria-labelledby="mobile-panel-title">
+  <div class="mobile-panel-head"><h2 id="mobile-panel-title">Orders</h2><div id="mobile-panel-actions"><button id="mobile-panel-close" type="button" aria-label="Close panel">×</button></div></div>
+  <div id="mobile-panel-body"></div>
+</dialog>
 
 <script src="config.js"></script>
 <script src="app.js"></script>
