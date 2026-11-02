@@ -1,6 +1,6 @@
 # Working on the route planner
 
-Start with README.md, docs/ARCHITECTURE.md and data/README.md. The original project was Vitrina’s routing simulator; this independent release keeps its actual interface and route/cost implementation.
+Start with the [product tour](docs/product-tour.md), [README](README.md), [architecture](docs/ARCHITECTURE.md) and [data guide](data/README.md). The tour maps the user journey and product areas to source; the README links runnable local setup. The original project was Vitrina’s routing simulator; this independent release keeps its actual interface and route/cost implementation.
 
 For the first result, follow skills/run-route-planner/SKILL.md. The fixed recorded example needs Python 3 and browser network access for map libraries, tiles and fonts. It makes zero live routing or solver calls. Other baskets require an explicitly configured OSRM service; VROOM confirmation is optional.
 
